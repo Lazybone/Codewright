@@ -1,7 +1,9 @@
-[
-  {
-    "name": "codewright",
-    "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.",
-    "path": "."
-  }
-]
+{
+  "plugins": [
+    {
+      "name": "codewright",
+      "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.",
+      "path": "."
+    }
+  ]
+}
