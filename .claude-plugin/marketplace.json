@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "codewright",
-      "version": "1.2.0",
+      "version": "0.1.2",
       "source": ".",
       "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits."
     }
