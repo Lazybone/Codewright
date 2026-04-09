@@ -1,122 +1,122 @@
-# Audit-Report Template
+# Audit Report Template
 
-Der Abschluss-Report wird in diesem Format erstellt und als
-`AUDIT-REPORT.md` im Repo-Root gespeichert.
+The final report is created in this format and saved as
+`AUDIT-REPORT.md` in the repo root.
 
 ## Template
 
 ```markdown
 # 🔍 Project Audit Report
 
-**Projekt**: <Repository-Name>
-**Datum**: <YYYY-MM-DD>
-**Analysierte Dateien**: <Anzahl>
-**Erkannte Sprache(n)**: <Sprachen/Frameworks>
+**Project**: <Repository name>
+**Date**: <YYYY-MM-DD>
+**Analyzed files**: <Count>
+**Detected language(s)**: <Languages/Frameworks>
 
 ---
 
 ## Executive Summary
 
-<2-3 Sätze Gesamtbewertung: Wie steht das Projekt da?>
+<2-3 sentences overall assessment: How does the project stand?>
 
-| Severity | Findings | Erstelle Issues |
-|----------|----------|-----------------|
+| Severity | Findings | Created Issues |
+|----------|----------|----------------|
 | 🔴 Critical | <N> | <N> |
 | 🟠 High | <N> | <N> |
 | 🟡 Medium | <N> | <N> |
 | 🟢 Low | <N> | <N> |
-| **Gesamt** | **<N>** | **<N>** |
+| **Total** | **<N>** | **<N>** |
 
-<Wenn Findings mit bestehenden Issues übersprungen wurden:>
-<N> Findings waren bereits als offene Issues erfasst und wurden übersprungen.
+<If findings were skipped because they matched existing issues:>
+<N> findings were already tracked as open issues and were skipped.
 
 ---
 
 ## 🔴 Critical Findings
 
-### <Nr>. <Titel>
-- **Kategorie**: <Agent-Tag> / <Kategorie>
-- **Datei**: `<pfad>` (Zeile <X>)
-- **Issue**: #<erstellte Issue-Nummer>
-- **Problem**: <Beschreibung>
-- **Empfehlung**: <Fix>
+### <No>. <Title>
+- **Category**: <Agent tag> / <Category>
+- **File**: `<path>` (Line <X>)
+- **Issue**: #<created issue number>
+- **Problem**: <Description>
+- **Recommendation**: <Fix>
 
 ---
 
 ## 🟠 High Findings
 
-### <Nr>. <Titel>
+### <No>. <Title>
 ...
 
 ---
 
 ## 🟡 Medium Findings
 
-### <Nr>. <Titel>
+### <No>. <Title>
 ...
 
 ---
 
 ## 🟢 Low Findings
 
-### <Nr>. <Titel>
+### <No>. <Title>
 ...
 
 ---
 
-## ✅ Positive Beobachtungen
+## ✅ Positive Observations
 
-<Was ist gut am Projekt? Beispiele:>
-- Gute Test-Abdeckung in `src/core/`
-- Saubere Ordnerstruktur nach Framework-Konventionen
-- CI/CD Pipeline konfiguriert
-- Konsistenter Code-Stil
+<What is good about the project? Examples:>
+- Good test coverage in `src/core/`
+- Clean folder structure following framework conventions
+- CI/CD pipeline configured
+- Consistent code style
 
 ---
 
-## 📊 Metriken
+## 📊 Metrics
 
-| Metrik | Wert |
-|--------|------|
-| Projektgröße | <N> Dateien |
-| Test-Dateien | <N> |
-| Test-Ratio | <N>% |
-| Offene Issues | <N> |
-| Stale Issues (>6 Monate) | <N> |
-| TODO/FIXME im Code | <N> |
+| Metric | Value |
+|--------|-------|
+| Project size | <N> files |
+| Test files | <N> |
+| Test ratio | <N>% |
+| Open issues | <N> |
+| Stale issues (>6 months) | <N> |
+| TODO/FIXME in code | <N> |
 | Dependencies | <N> |
-| Veraltete Dependencies | <N> |
+| Outdated dependencies | <N> |
 
 ---
 
 ## 🎯 Quick Wins
 
-Die folgenden Findings lassen sich schnell beheben und haben den
-größten Effekt auf die Projekt-Gesundheit:
+The following findings can be fixed quickly and have the
+greatest effect on project health:
 
-1. <Finding mit bestem Aufwand/Nutzen-Verhältnis>
+1. <Finding with best effort/impact ratio>
 2. <...>
 3. <...>
 
 ---
 
-## Erstellte Issues
+## Created Issues
 
-| # | Titel | Severity | Kategorie |
-|---|-------|----------|-----------|
-| <Nr> | <Titel> | <Severity> | <Kategorie> |
+| # | Title | Severity | Category |
+|---|-------|----------|----------|
+| <No> | <Title> | <Severity> | <Category> |
 | ... | ... | ... | ... |
 
 ---
 
-<sub>Erstellt durch audit-project Skill am <DATUM></sub>
+<sub>Created by audit-project skill on <DATE></sub>
 ```
 
-## Hinweise für den Koordinator
+## Notes for the Coordinator
 
-- **Positive Beobachtungen nicht vergessen** — Ein Audit-Report der nur
-  Probleme auflistet ist demotivierend. Erwähne auch was gut ist.
-- **Quick Wins hervorheben** — Hilft dem Team zu priorisieren.
-- **Metriken geben Kontext** — 5 Findings bei 10 Dateien ist viel,
-  5 Findings bei 5000 Dateien ist wenig.
-- **Erstellte Issues verlinken** — Damit der User direkt loslegen kann.
+- **Do not forget positive observations** — An audit report that only
+  lists problems is demotivating. Also mention what is good.
+- **Highlight quick wins** — Helps the team prioritize.
+- **Metrics provide context** — 5 findings in 10 files is a lot,
+  5 findings in 5000 files is few.
+- **Link created issues** — So the user can get started right away.

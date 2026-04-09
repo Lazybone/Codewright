@@ -1,27 +1,28 @@
 ---
 name: fix-github-issue
 description: >
-  Analysiert ein GitHub Issue, reproduziert den Bug, erstellt einen Fix-Plan,
-  behebt den Fehler, verifiziert die Lösung und committet das Ergebnis.
-  Nutze diesen Skill wenn der User ein GitHub Issue beheben möchte, eine Issue-URL
-  oder Issue-Nummer nennt, oder sagt "fix issue", "behebe issue", "löse das issue",
-  "schau dir issue #X an". Auch bei "bug fixen", "diesen Fehler beheben" mit
-  Issue-Referenz. Arbeitet mit Subagenten-Teams für parallele Analyse und Verifikation.
-  Kann MCP Google DevTools zur Browser-Verifikation nutzen.
+  Analyzes a GitHub issue, reproduces the bug, creates a fix plan, implements the fix,
+  verifies the solution and commits the result. Use this skill when the user wants to
+  fix a GitHub issue, mentions an issue URL or issue number, or says "fix issue",
+  "resolve issue", "look at issue #X", "fix this bug", "resolve this error" with an
+  issue reference. Works with sub-agent teams for parallel analysis and verification.
+  Can use MCP Google DevTools for browser-based verification.
+  Also triggers on German: "behebe issue", "löse das issue", "schau dir issue #X an",
+  "bug fixen", "diesen Fehler beheben".
 ---
 
-# GitHub Issue Fixer — Agentenbasierter Workflow
+# GitHub Issue Fixer — Agent-Based Workflow
 
-Dieser Skill behebt GitHub Issues systematisch in einem mehrstufigen Prozess
-mit spezialisierten Subagenten. Jeder Agent hat eine klar definierte Rolle.
+This skill fixes GitHub issues systematically in a multi-step process
+using specialized sub-agents. Each agent has a clearly defined role.
 
-## Voraussetzungen
+## Prerequisites
 
-- Git-Repository mit konfiguriertem Remote
-- GitHub CLI (`gh`) installiert und authentifiziert
-- Optional: MCP Google DevTools für Browser-basierte Verifikation
+- Git repository with configured remote
+- GitHub CLI (`gh`) installed and authenticated
+- Optional: MCP Google DevTools for browser-based verification
 
-## Workflow-Übersicht
+## Workflow Overview
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
@@ -37,114 +38,114 @@ mit spezialisierten Subagenten. Jeder Agent hat eine klar definierte Rolle.
                           │              └─────────────┘
                           │                    │
                           └────────────────────┘
-                               (wenn OK)
+                               (if OK)
 ```
 
-## Schritt-für-Schritt-Ablauf
+## Step-by-Step Process
 
-### Phase 1: Issue laden & analysieren
+### Phase 1: Load & Analyze Issue
 
-Lade das Issue über die GitHub CLI:
+Load the issue via the GitHub CLI:
 
 ```bash
 gh issue view <ISSUE_NUMBER> --json title,body,labels,comments,assignees
 ```
 
-Starte dann einen **Explore-Subagenten** für die Codebase-Analyse.
-Starte den Agenten gemäß `../../references/agent-invocation.md`.
-Lies dazu die Anweisungen in `agents/analyzer.md` und übergib dem Agenten:
+Then start an **Explore sub-agent** for codebase analysis.
+Start the agent according to `../../references/agent-invocation.md`.
+Read the instructions in `agents/analyzer.md` and pass to the agent:
 
-- Den vollständigen Issue-Text (Titel, Body, Kommentare)
-- Den Auftrag, relevante Dateien zu finden und den Bug zu lokalisieren
-- Die Aufforderung, den Bug zu reproduzieren (Tests ausführen, Logs prüfen)
+- The complete issue text (title, body, comments)
+- The task of finding relevant files and locating the bug
+- The request to reproduce the bug (run tests, check logs)
 
-Der Analyzer liefert zurück:
-- Betroffene Dateien und Code-Stellen
-- Reproduktionsstatus (Bug bestätigt ja/nein)
-- Root-Cause-Analyse
+The Analyzer returns:
+- Affected files and code locations
+- Reproduction status (bug confirmed yes/no)
+- Root cause analysis
 
-**Wenn der Bug nicht mehr reproduzierbar ist**: Melde dies dem User und frage,
-ob das Issue geschlossen werden soll. Beende den Workflow.
+**If the bug is no longer reproducible**: Report this to the user and ask
+whether the issue should be closed. End the workflow.
 
-### Phase 2: Fix-Plan erstellen
+### Phase 2: Create Fix Plan
 
-Starte einen **Plan-Subagenten** mit den Ergebnissen aus Phase 1.
-Starte den Agenten gemäß `../../references/agent-invocation.md`.
-Lies dazu `agents/planner.md` und übergib:
+Start a **Plan sub-agent** with the results from Phase 1.
+Start the agent according to `../../references/agent-invocation.md`.
+Read `agents/planner.md` and pass:
 
-- Die Analyse-Ergebnisse (betroffene Dateien, Root Cause)
-- Den Original-Issue-Text
+- The analysis results (affected files, root cause)
+- The original issue text
 
-Der Planner liefert:
-- Geordnete Liste der notwendigen Änderungen
-- Risikobewertung pro Änderung
-- Vorgeschlagene Teststrategie
+The Planner returns:
+- Ordered list of necessary changes
+- Risk assessment per change
+- Suggested test strategy
 
-Präsentiere den Plan dem User und warte auf Bestätigung bevor du fortfährst.
+Present the plan to the user and wait for confirmation before proceeding.
 
-### Phase 3: Fix implementieren
+### Phase 3: Implement Fix
 
-Implementiere die Änderungen gemäß Plan. Arbeite dabei im Hauptagenten:
+Implement the changes according to the plan. Work in the main agent:
 
-1. Erstelle einen Feature-Branch: `git checkout -b fix/issue-<NUMMER>`
-2. Führe die geplanten Änderungen Datei für Datei durch
-3. Halte dich eng an den Plan — bei Abweichungen informiere den User
-4. Achte auf bestehende Code-Konventionen (Linting, Formatierung)
-5. Schreibe oder aktualisiere Tests für den Fix
+1. Create a feature branch: `git checkout -b fix/issue-<NUMBER>`
+2. Execute the planned changes file by file
+3. Stick closely to the plan — inform the user of any deviations
+4. Follow existing code conventions (linting, formatting)
+5. Write or update tests for the fix
 
-### Phase 4: Verifikation
+### Phase 4: Verification
 
-Starte die Verifikation auf zwei parallelen Wegen:
+Start verification via two parallel paths:
 
-**4a. Automatische Tests** — Führe die Test-Suite aus:
+**4a. Automated Tests** — Run the test suite:
 ```bash
-# Erkenne das Test-Framework automatisch
+# Detect the test framework automatically
 # npm test / pytest / cargo test / go test / etc.
 ```
 
-**4b. Browser-Verifikation (bei UI-Bugs)** — Wenn das Issue ein
-visuelles oder Frontend-Problem betrifft, nutze MCP Google DevTools:
+**4b. Browser Verification (for UI bugs)** — If the issue involves
+a visual or frontend problem, use MCP Google DevTools:
 
-Lies dazu `references/devtools-verification.md` für die genaue Vorgehensweise.
+Read `references/devtools-verification.md` for the exact procedure.
 
-Prüfe nach der Verifikation:
-- Alle bestehenden Tests bestehen weiterhin (keine Regressionen)
-- Der spezifische Bug ist behoben
-- Keine neuen Linting-Fehler oder Warnungen
+Check after verification:
+- All existing tests still pass (no regressions)
+- The specific bug is fixed
+- No new linting errors or warnings
 
-**Wenn die Verifikation fehlschlägt**: Analysiere die Fehler, passe den Fix an
-und wiederhole Phase 4. Maximal 3 Iterationen, danach den User einbeziehen.
+**If verification fails**: Analyze the errors, adjust the fix,
+and repeat Phase 4. Maximum 3 iterations, then involve the user.
 
-### Phase 5: Commit & Abschluss
+### Phase 5: Commit & Wrap-up
 
-Wenn alle Verifikationen bestanden:
+Once all verifications have passed:
 
-1. Stage die Änderungen: `git add -A`
-2. Erstelle einen aussagekräftigen Commit:
+1. Stage the changes: `git add -A`
+2. Create a meaningful commit:
    ```
-   fix: <kurze Beschreibung> (closes #<NUMMER>)
+   fix: <short description> (closes #<NUMBER>)
 
-   <Was wurde geändert und warum>
+   <What was changed and why>
 
-   Fixes #<NUMMER>
+   Fixes #<NUMBER>
    ```
-3. Zeige dem User eine Zusammenfassung:
-   - Welche Dateien geändert wurden
-   - Was der Fix bewirkt
-   - Testergebnisse
-4. Frage ob gepusht und ein PR erstellt werden soll
+3. Show the user a summary:
+   - Which files were changed
+   - What the fix does
+   - Test results
+4. Ask whether to push and create a PR
 
-## Fehlerbehandlung
+## Error Handling
 
-- Wenn `gh` nicht installiert ist: Versuche die Issue-Infos über die GitHub API
-  via `curl` zu holen, oder bitte den User die Issue-Beschreibung zu pasten.
-- Wenn Tests nicht gefunden werden: Frage den User nach dem Test-Befehl.
-- Wenn der Fix nach 3 Iterationen nicht verifiziert werden kann: Stoppe und
-  präsentiere dem User den aktuellen Stand mit den offenen Problemen.
+- If `gh` is not installed: Try to fetch the issue info via the GitHub API
+  using `curl`, or ask the user to paste the issue description.
+- If tests are not found: Ask the user for the test command.
+- If the fix cannot be verified after 3 iterations: Stop and
+  present the current state with the open problems to the user.
 
-## Hinweise
+## Notes
 
-- Erstelle immer einen separaten Branch, arbeite nie direkt auf main/master.
-- Committe nie ohne erfolgreiche Verifikation.
-- Informiere den User bei jedem Phasenwechsel über den Fortschritt.
-- Bei Unsicherheiten: Lieber nachfragen als raten.
+- Always create a separate branch, never work directly on main/master.
+- Never commit without successful verification.
+- Inform the user about progress at each phase transition.
+- When in doubt: Better to ask than to guess.

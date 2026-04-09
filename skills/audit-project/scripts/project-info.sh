@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# project-info.sh — Sammelt grundlegende Projekt-Informationen
-# Wird vom Koordinator in Phase 1 genutzt.
+# project-info.sh — Collects basic project information
+# Used by the coordinator in Phase 1.
 #
 # Usage: ./scripts/project-info.sh [project-root]
-# Output: JSON mit Projekt-Metadaten
+# Output: JSON with project metadata
 
 set -euo pipefail
 
@@ -12,7 +12,7 @@ cd "$ROOT"
 
 echo "{"
 
-# --- Sprache erkennen ---
+# --- Detect language ---
 languages=()
 [ -f package.json ] && languages+=("javascript/typescript")
 [ -f tsconfig.json ] && languages+=("typescript")
@@ -31,7 +31,7 @@ for lang in "${languages[@]}"; do
 done
 printf '],\n'
 
-# --- Framework erkennen ---
+# --- Detect framework ---
 framework="unknown"
 if [ -f package.json ]; then
   [ -f next.config.* ] 2>/dev/null && framework="nextjs"
@@ -51,7 +51,7 @@ grep -q "fastapi" pyproject.toml 2>/dev/null && framework="fastapi"
 
 printf '  "framework": "%s",\n' "$framework"
 
-# --- Datei-Statistiken ---
+# --- File statistics ---
 total_files=$(find . -type f \
   -not -path '*/.git/*' -not -path '*/node_modules/*' \
   -not -path '*/vendor/*' -not -path '*/target/*' \
@@ -90,7 +90,7 @@ fi
 printf '  "github_cli": %s,\n' "$has_gh"
 printf '  "open_issues": %s,\n' "$open_issues"
 
-# --- Essenzielle Dateien ---
+# --- Essential files ---
 printf '  "has_readme": %s,\n' "$([ -f README.md ] && echo true || echo false)"
 printf '  "has_gitignore": %s,\n' "$([ -f .gitignore ] && echo true || echo false)"
 printf '  "has_license": %s,\n' "$([ -f LICENSE ] || [ -f LICENSE.md ] && echo true || echo false)"

@@ -1,119 +1,119 @@
-# GitHub Issue Template — für automatisch erstellte Issues
+# GitHub Issue Template — for automatically created issues
 
-Jedes Finding wird als GitHub Issue mit diesem Format erstellt.
+Each finding is created as a GitHub Issue using this format.
 
-## Issue-Titel
+## Issue Title
 
-Format: `[AUDIT/<KATEGORIE>] <Kurztitel>`
+Format: `[AUDIT/<CATEGORY>] <Short title>`
 
-Beispiele:
+Examples:
 - `[AUDIT/SECURITY] Hardcoded API key in config.ts`
 - `[AUDIT/BUG] Unhandled promise rejection in UserService`
 - `[AUDIT/HYGIENE] 23 unused imports across 8 files`
 - `[AUDIT/STRUCTURE] Missing README setup instructions`
 - `[AUDIT/ISSUES] 5 stale issues without activity since 2024`
 
-## Issue-Body
+## Issue Body
 
 ```markdown
-## Beschreibung
+## Description
 
-<Beschreibung des Problems aus dem Finding>
+<Description of the problem from the finding>
 
-## Betroffene Dateien
+## Affected Files
 
-- `pfad/zur/datei.ext` (Zeile X-Y)
+- `path/to/file.ext` (Line X-Y)
 
-## Auswirkung
+## Impact
 
-<Was passiert wenn nichts getan wird>
+<What happens if nothing is done>
 
-## Empfohlene Lösung
+## Recommended Solution
 
-<Konkrete Empfehlung aus dem Finding>
+<Specific recommendation from the finding>
 
-## Code-Kontext
+## Code Context
 
-```<sprache>
-<Code-Ausschnitt wenn vorhanden>
+```<language>
+<Code snippet if available>
 ```
 
 ---
 
-<sub>🤖 Automatisch erstellt durch Project Audit am <DATUM>.
-Severity: <SEVERITY> | Kategorie: <KATEGORIE></sub>
+<sub>🤖 Automatically created by Project Audit on <DATE>.
+Severity: <SEVERITY> | Category: <CATEGORY></sub>
 ```
 
 ## Labels
 
-Jedes Issue bekommt zwei Labels:
-1. **Audit-Kategorie**: `audit:security`, `audit:bug`, `audit:hygiene`, `audit:structure`, `audit:stale-issue`
+Each issue gets two labels:
+1. **Audit category**: `audit:security`, `audit:bug`, `audit:hygiene`, `audit:structure`, `audit:stale-issue`
 2. **Severity**: `severity:critical`, `severity:high`, `severity:medium`, `severity:low`
 
-## gh-Befehl
+## gh Command
 
 ```bash
 gh issue create \
-  --title "[AUDIT/<KATEGORIE>] <Titel>" \
-  --body "<Body-Inhalt>" \
-  --label "audit:<kategorie>,severity:<severity>"
+  --title "[AUDIT/<CATEGORY>] <Title>" \
+  --body "<Body content>" \
+  --label "audit:<category>,severity:<severity>"
 ```
 
-## Spezialfälle
+## Special Cases
 
-### Gruppierte Findings
+### Grouped Findings
 
-Wenn ein Finding viele gleichartige Probleme umfasst (z.B. 47 unbenutzte
-Imports), erstelle EIN Issue mit der vollständigen Liste im Body:
+When a finding covers many similar problems (e.g., 47 unused
+imports), create ONE issue with the complete list in the body:
 
 ```markdown
-## Beschreibung
+## Description
 
-23 unbenutzte Imports in 8 Dateien gefunden.
+23 unused imports found in 8 files.
 
-## Betroffene Dateien
+## Affected Files
 
-| Datei | Unbenutzte Imports |
-|-------|-------------------|
+| File | Unused Imports |
+|------|---------------|
 | `src/utils/helpers.ts` | `lodash`, `moment` |
-| `src/api/client.ts` | `axios` (nur Type importiert) |
+| `src/api/client.ts` | `axios` (only type imported) |
 | ... | ... |
 
-## Empfohlene Lösung
+## Recommended Solution
 
-Entferne die unbenutzten Imports. Bei Type-only Imports:
-`import type { ... }` verwenden.
+Remove the unused imports. For type-only imports:
+use `import type { ... }`.
 ```
 
 ### Stale Issues
 
-Für stale Issues: Erstelle kein neues Issue, sondern kommentiere
-das bestehende Issue:
+For stale issues: Do not create a new issue, instead comment on
+the existing issue:
 
 ```bash
-gh issue comment <NUMBER> --body "🤖 **Audit-Hinweis**: Dieses Issue hatte seit >6 Monaten keine Aktivität. Bitte prüfen ob es noch relevant ist."
+gh issue comment <NUMBER> --body "🤖 **Audit note**: This issue has had no activity for >6 months. Please check whether it is still relevant."
 ```
 
-### Möglicherweise bereits gefixte Issues
+### Possibly Already Fixed Issues
 
 ```bash
-gh issue comment <NUMBER> --body "🤖 **Audit-Hinweis**: Der betroffene Code wurde seit Erstellung dieses Issues geändert (Commits: <hash>). Bitte prüfen ob das Problem noch besteht."
+gh issue comment <NUMBER> --body "🤖 **Audit note**: The affected code has been changed since this issue was created (commits: <hash>). Please check whether the problem still exists."
 ```
 
 ### Duplicate Issues
 
-Erstelle ein neues Issue das die Duplikate auflistet:
+Create a new issue that lists the duplicates:
 
 ```markdown
-## Beschreibung
+## Description
 
-Folgende Issues scheinen dasselbe Problem zu beschreiben:
+The following issues appear to describe the same problem:
 
 - #12: "Login button does not work"
 - #47: "Cannot click login on mobile"
 
-## Empfohlene Lösung
+## Recommended Solution
 
-Zusammenführen: Schließe das neuere Issue (#47) mit Verweis auf #12,
-oder umgekehrt falls #47 besser dokumentiert ist.
+Merge: Close the newer issue (#47) with a reference to #12,
+or vice versa if #47 is better documented.
 ```

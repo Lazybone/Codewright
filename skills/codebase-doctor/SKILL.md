@@ -2,57 +2,61 @@
 name: codebase-doctor
 description: >
   Use when the user wants a comprehensive codebase analysis with automatic fixes.
-  Triggers: "Codebase analysieren", "Fehler finden und beheben", "Security Check",
-  "Code-Gesundheit", "Projekt durchleuchten", "Bugs finden", "Code auditieren und fixen",
-  "Sicherheitscheck mit Fix", "Codebase Doctor", "alles pruefen und reparieren",
-  "Qualitaetscheck", "Code Review mit Auto-Fix". Combines analysis, auto-fix, and reporting
+  Triggers: "analyze codebase", "find and fix bugs", "security check",
+  "code health", "examine project", "find bugs", "audit code and fix",
+  "security check with fix", "Codebase Doctor", "check and repair everything",
+  "quality check", "code review with auto-fix". Combines analysis, auto-fix, and reporting
   in wave-based parallel agent execution.
+  Also triggers on German: "Codebase analysieren", "Fehler finden und beheben", "Security Check",
+  "Code-Gesundheit", "Projekt durchleuchten", "Bugs finden", "Code auditieren und fixen",
+  "Sicherheitscheck mit Fix", "alles pruefen und reparieren",
+  "Qualitaetscheck", "Code Review mit Auto-Fix".
 ---
 
 # Codebase Doctor
 
-Analysiert die komplette Codebase mit 7 parallelen Agenten, behebt gefundene Issues
-automatisch und erstellt einen Abschlussbericht. Folgt dem Wave-basierten Workflow.
+Analyzes the complete codebase with 7 parallel agents, automatically fixes discovered issues,
+and generates a final report. Follows the wave-based workflow.
 
-## Ablauf
+## Workflow
 
 ```dot
 digraph codebase_doctor {
     rankdir=TB;
     "Start" [shape=doublecircle];
-    "Wave 1: Analyse (7 Agenten)" [shape=box];
-    "Konsolidierung & Priorisierung" [shape=box];
-    "User: Findings pruefen" [shape=diamond];
-    "Wave 2: Auto-Fix (7 Agenten)" [shape=box];
-    "Wave 3: Review & Verify (7 Agenten)" [shape=box];
-    "Weitere Issues?" [shape=diamond];
-    "Bericht erstellen" [shape=box];
-    "Ende" [shape=doublecircle];
+    "Wave 1: Analysis (7 Agents)" [shape=box];
+    "Consolidation & Prioritization" [shape=box];
+    "User: Review Findings" [shape=diamond];
+    "Wave 2: Auto-Fix (7 Agents)" [shape=box];
+    "Wave 3: Review & Verify (7 Agents)" [shape=box];
+    "More Issues?" [shape=diamond];
+    "Generate Report" [shape=box];
+    "End" [shape=doublecircle];
 
-    "Start" -> "Wave 1: Analyse (7 Agenten)";
-    "Wave 1: Analyse (7 Agenten)" -> "Konsolidierung & Priorisierung";
-    "Konsolidierung & Priorisierung" -> "User: Findings pruefen";
-    "User: Findings pruefen" -> "Wave 2: Auto-Fix (7 Agenten)" [label="Fix genehmigt"];
-    "User: Findings pruefen" -> "Bericht erstellen" [label="Nur Report"];
-    "Wave 2: Auto-Fix (7 Agenten)" -> "Wave 3: Review & Verify (7 Agenten)";
-    "Wave 3: Review & Verify (7 Agenten)" -> "Weitere Issues?" ;
-    "Weitere Issues?" -> "Wave 2: Auto-Fix (7 Agenten)" [label="ja"];
-    "Weitere Issues?" -> "Bericht erstellen" [label="nein"];
-    "Bericht erstellen" -> "Ende";
+    "Start" -> "Wave 1: Analysis (7 Agents)";
+    "Wave 1: Analysis (7 Agents)" -> "Consolidation & Prioritization";
+    "Consolidation & Prioritization" -> "User: Review Findings";
+    "User: Review Findings" -> "Wave 2: Auto-Fix (7 Agents)" [label="Fix approved"];
+    "User: Review Findings" -> "Generate Report" [label="Report only"];
+    "Wave 2: Auto-Fix (7 Agents)" -> "Wave 3: Review & Verify (7 Agents)";
+    "Wave 3: Review & Verify (7 Agents)" -> "More Issues?" ;
+    "More Issues?" -> "Wave 2: Auto-Fix (7 Agents)" [label="yes"];
+    "More Issues?" -> "Generate Report" [label="no"];
+    "Generate Report" -> "End";
 }
 ```
 
-## Phase 0: Vorbereitung
+## Phase 0: Preparation
 
-1. **Git-Status pruefen** - Arbeitsverzeichnis muss sauber sein
-2. **Neuen Branch erstellen**: `git checkout -b doctor/$(date +%Y%m%d-%H%M%S)`
-3. **Projekt-Info sammeln**:
+1. **Check git status** - Working directory must be clean
+2. **Create new branch**: `git checkout -b doctor/$(date +%Y%m%d-%H%M%S)`
+3. **Collect project info**:
 
 ```bash
-# Sprache/Framework erkennen
+# Detect language/framework
 ls package.json pyproject.toml Cargo.toml go.mod Gemfile pom.xml 2>/dev/null
 
-# Projektgroesse
+# Project size
 find . -type f \
   -not -path '*/node_modules/*' -not -path '*/.git/*' \
   -not -path '*/vendor/*' -not -path '*/__pycache__/*' \
@@ -61,145 +65,145 @@ find . -type f \
   | wc -l
 ```
 
-4. **User fragen**: Gesamtes Projekt oder bestimmte Verzeichnisse?
+4. **Ask user**: Entire project or specific directories?
 
-## Phase 1: Wave 1 — Analyse (7 parallele Agenten)
+## Phase 1: Wave 1 -- Analysis (7 parallel Agents)
 
-Starte **7 Agenten gleichzeitig** als Explore-Subagenten (read-only).
-Starte die Agenten gemäß `../../references/agent-invocation.md` als Explore-Subagenten.
-Lies die jeweilige Agent-Datei und uebergib sie als Prompt.
+Start **7 agents simultaneously** as Explore subagents (read-only).
+Start the agents according to `../../references/agent-invocation.md` as Explore subagents.
+Read the respective agent file and pass it as the prompt.
 
-| # | Agent | Datei | Fokus |
-|---|-------|-------|-------|
-| 1 | Security Auditor | `agents/security.md` | Secrets, Injection, unsichere Config |
-| 2 | Bug Detector | `agents/bugs.md` | Logikfehler, Error Handling, Async |
-| 3 | Code Quality | `agents/quality.md` | Dead Code, Duplikate, Komplexitaet |
-| 4 | API Consistency | `agents/api-consistency.md` | Endpunkt-Muster, Response-Formate |
-| 5 | Dependency Analyzer | `agents/dependencies.md` | Veraltete/unsichere Packages |
-| 6 | Frontend Reviewer | `agents/frontend.md` | XSS, DOM-Sicherheit, JS-Qualitaet |
-| 7 | Architecture Reviewer | `agents/architecture.md` | Struktur, Kopplung, Patterns |
+| # | Agent | File | Focus |
+|---|-------|------|-------|
+| 1 | Security Auditor | `agents/security.md` | Secrets, injection, insecure config |
+| 2 | Bug Detector | `agents/bugs.md` | Logic errors, error handling, async |
+| 3 | Code Quality | `agents/quality.md` | Dead code, duplicates, complexity |
+| 4 | API Consistency | `agents/api-consistency.md` | Endpoint patterns, response formats |
+| 5 | Dependency Analyzer | `agents/dependencies.md` | Outdated/insecure packages |
+| 6 | Frontend Reviewer | `agents/frontend.md` | XSS, DOM safety, JS quality |
+| 7 | Architecture Reviewer | `agents/architecture.md` | Structure, coupling, patterns |
 
-Jeder Agent liefert Findings im Format aus `references/finding-format.md`.
+Each agent delivers findings in the format from `references/finding-format.md`.
 
-**Wichtig**: Alle 7 Agenten als `subagent_type: "Explore"` starten — sie aendern nichts.
+**Important**: Start all 7 agents as `subagent_type: "Explore"` -- they do not modify anything.
 
-## Phase 2: Konsolidierung
+## Phase 2: Consolidation
 
-Nach Abschluss aller 7 Agenten:
+After all 7 agents complete:
 
-1. **Deduplizieren** — Gleiche Findings aus verschiedenen Agenten zusammenfuehren
-2. **Severity zuweisen**:
-   - 🔴 CRITICAL: Aktive Sicherheitsluecke, Datenverlust, Crashes
-   - 🟠 HIGH: Sicherheitsrisiko, schwere Bugs, CVEs
-   - 🟡 MEDIUM: Potenzielle Bugs, veraltete Deps, Wartbarkeitsprobleme
-   - 🟢 LOW: Cleanup, Style, nice-to-have
-3. **Fixbarkeit bewerten**:
-   - AUTO-FIX: Kann sicher automatisch behoben werden
-   - MANUAL: Braucht menschliche Entscheidung
-   - INFO: Nur zur Kenntnis, kein Fix noetig
-4. **Sortieren**: Critical -> High -> Medium -> Low
+1. **Deduplicate** -- Merge identical findings from different agents
+2. **Assign severity**:
+   - 🔴 CRITICAL: Active security vulnerability, data loss, crashes
+   - 🟠 HIGH: Security risk, severe bugs, CVEs
+   - 🟡 MEDIUM: Potential bugs, outdated deps, maintainability issues
+   - 🟢 LOW: Cleanup, style, nice-to-have
+3. **Assess fixability**:
+   - AUTO-FIX: Can be safely fixed automatically
+   - MANUAL: Requires human decision
+   - INFO: For awareness only, no fix needed
+4. **Sort**: Critical -> High -> Medium -> Low
 
-Zeige dem User die konsolidierte Liste und frage:
-- "Soll ich alle auto-fixbaren Issues beheben?"
-- "Nur Critical/High?"
-- "Nur Report ohne Fixes?"
+Show the user the consolidated list and ask:
+- "Should I fix all auto-fixable issues?"
+- "Only Critical/High?"
+- "Report only without fixes?"
 
-## Phase 3: Wave 2 — Auto-Fix (7 parallele Agenten)
+## Phase 3: Wave 2 -- Auto-Fix (7 parallel Agents)
 
-Verteile die zu fixenden Issues auf **7 Agenten**, wobei:
+Distribute the issues to fix across **7 agents**, where:
 
-- **Keine zwei Agenten die gleiche Datei aendern** (Merge-Konflikte vermeiden)
-- Jeder Agent bekommt eine Liste von Findings mit konkreten Fix-Anweisungen
-- Agenten arbeiten mit `mode: "auto"` fuer Code-Aenderungen
+- **No two agents modify the same file** (avoid merge conflicts)
+- Each agent receives a list of findings with concrete fix instructions
+- Agents work with `mode: "auto"` for code changes
 
-Agent-Prompt-Template:
+Agent prompt template:
 
 ```
-Du bist ein FIX AGENT. Behebe die folgenden Issues:
+You are a FIX AGENT. Fix the following issues:
 
-Projekt: {PROJECT_ROOT}
-Deine Dateien (NUR diese darfst du aendern): {FILE_LIST}
+Project: {PROJECT_ROOT}
+Your files (you may ONLY modify these): {FILE_LIST}
 
-Findings zu beheben:
+Findings to fix:
 {FINDINGS_LIST}
 
-Regeln:
-1. Aendere NUR die dir zugewiesenen Dateien
-2. Lies jede Datei vollstaendig bevor du aenderst
-3. Halte dich an die bestehenden Code-Conventions
-4. Fuehre nach jeder Aenderung eine Syntax-Pruefung durch
-5. Dokumentiere jede Aenderung
+Rules:
+1. Only modify the files assigned to you
+2. Read each file completely before making changes
+3. Follow existing code conventions
+4. Run a syntax check after each change
+5. Document each change
 
-Fuer jedes Finding:
-- Lies den betroffenen Code-Bereich
-- Implementiere den Fix
-- Pruefe dass der Fix korrekt ist
-- Wenn unsicher: Ueberspringe und markiere als "NEEDS_REVIEW"
+For each finding:
+- Read the affected code section
+- Implement the fix
+- Verify the fix is correct
+- If unsure: Skip and mark as "NEEDS_REVIEW"
 
-Am Ende: Liste alle durchgefuehrten Fixes.
+At the end: List all fixes performed.
 ```
 
-### Datei-Partitionierung
+### File Partitioning
 
-1. Sammle alle Findings mit `Fixbar: auto`
-2. Gruppiere nach Datei
-3. Verteile Dateien auf max. 7 Agenten:
-   - Keine Datei darf in zwei Agenten vorkommen
-   - Aehnliche Dateien (gleiches Modul/Verzeichnis) beim gleichen Agenten
-   - Last moeglichst gleichmaessig verteilen
-4. Findings mit `Fixbar: manual` oder `info`: Ueberspringen, im Bericht dokumentieren
+1. Collect all findings with `Fixable: auto`
+2. Group by file
+3. Distribute files across max. 7 agents:
+   - No file may appear in two agents
+   - Similar files (same module/directory) go to the same agent
+   - Distribute load as evenly as possible
+4. Findings with `Fixable: manual` or `info`: Skip, document in report
 
-## Phase 4: Wave 3 — Review & Verify (7 parallele Agenten)
+## Phase 4: Wave 3 -- Review & Verify (7 parallel Agents)
 
-Starte 7 Review-Agenten, wobei **jeder Agent den Code eines anderen Fix-Agenten reviewt**:
+Start 7 review agents, where **each agent reviews the code of a different fix agent**:
 
-| Review Agent | Prueft Code von |
+| Review Agent | Reviews code from |
 |---|---|
-| 1 | Fix-Agent 2 |
-| 2 | Fix-Agent 3 |
+| 1 | Fix Agent 2 |
+| 2 | Fix Agent 3 |
 | ... | ... |
-| 7 | Fix-Agent 1 |
+| 7 | Fix Agent 1 |
 
-Jeder Review-Agent:
-1. Liest die geaenderten Dateien
-2. Prueft ob die Fixes korrekt sind
-3. Prueft ob neue Probleme eingefuehrt wurden
-4. Fuehrt vorhandene Linter/Formatter aus (ruff, eslint, etc.)
-5. Fuehrt vorhandene Tests aus
-6. Meldet: OK oder Issues
+Each review agent:
+1. Reads the modified files
+2. Checks whether the fixes are correct
+3. Checks whether new problems were introduced
+4. Runs available linters/formatters (ruff, eslint, etc.)
+5. Runs available tests
+6. Reports: OK or issues
 
-**Wenn Issues gefunden**: Zurueck zu Wave 2 mit den neuen Issues.
-**Wenn 0 Issues**: Weiter zum Bericht.
+**If issues found**: Back to Wave 2 with the new issues.
+**If 0 issues**: Proceed to report.
 
-### Loop-Limit
+### Loop Limit
 
-Wave 3 darf maximal **2x** zurueck zu Wave 2 springen.
-Nach dem 2. Durchlauf: Verbleibende Issues als `NEEDS_REVIEW` markieren
-und im Bericht dokumentieren. User informieren.
+Wave 3 may jump back to Wave 2 at most **2 times**.
+After the 2nd pass: Mark remaining issues as `NEEDS_REVIEW`
+and document in report. Inform user.
 
-## Phase 5: Bericht
+## Phase 5: Report
 
-Erstelle den Report nach `references/report-template.md` und zeige ihn dem User.
+Generate the report according to `references/report-template.md` and show it to the user.
 
-Abschliessend:
-1. Alle Aenderungen committen (wenn nicht schon geschehen)
-2. Report als `DOCTOR-REPORT.md` speichern
-3. User fragen: Branch mergen, PR erstellen, oder so lassen?
+Finally:
+1. Commit all changes (if not already done)
+2. Save report as `DOCTOR-REPORT.md`
+3. Ask user: Merge branch, create PR, or leave as is?
 
-## Modus-Optionen
+## Mode Options
 
-Der User kann vor dem Start waehlen:
+The user can choose before starting:
 
-| Option | Beschreibung | Default |
+| Option | Description | Default |
 |---|---|---|
-| `scope` | Ganzes Projekt oder bestimmte Verzeichnisse | Ganzes Projekt |
+| `scope` | Entire project or specific directories | Entire project |
 | `mode` | `report-only`, `fix-critical`, `fix-all` | `fix-all` |
-| `auto_commit` | Automatisch committen | true |
-| `create_branch` | Separaten Branch erstellen | true |
+| `auto_commit` | Commit automatically | true |
+| `create_branch` | Create separate branch | true |
 
-## Fehlerbehandlung
+## Error Handling
 
-- **Agent liefert keine Findings**: Bereich ist sauber — im Report positiv vermerken
-- **Fix-Agent unsicher**: Finding als NEEDS_REVIEW markieren, nicht forcieren
-- **Tests schlagen fehl nach Fix**: Fix revertieren, im Report dokumentieren
-- **Zu viele Findings (>50)**: Nur Critical/High auto-fixen, Rest im Report
+- **Agent returns no findings**: Area is clean -- note positively in report
+- **Fix agent unsure**: Mark finding as NEEDS_REVIEW, do not force
+- **Tests fail after fix**: Revert fix, document in report
+- **Too many findings (>50)**: Only auto-fix Critical/High, rest in report

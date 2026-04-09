@@ -5,6 +5,14 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [1.2.0] - 2026-04-09
+
+### Changed
+
+- All skills, agent prompts, references, and scripts translated from German to English.
+- SKILL.md description fields now include both English (primary) and German (secondary) trigger phrases.
+- Shell script comments and output strings translated to English.
+
 ## [1.1.0] - 2026-04-09
 
 ### Hinzugefügt

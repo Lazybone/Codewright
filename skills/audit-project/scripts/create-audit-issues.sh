@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# create-audit-issues.sh — Erstellt GitHub Issues aus einer Findings-Datei
+# create-audit-issues.sh — Creates GitHub Issues from a findings file
 #
 # Usage: ./scripts/create-audit-issues.sh <findings.json> [max-issues]
 #
-# Input: JSON-Array mit Findings:
+# Input: JSON array of findings:
 # [
 #   {
 #     "title": "[AUDIT/SECURITY] Hardcoded API key",
-#     "body": "## Beschreibung\n...",
+#     "body": "## Description\n...",
 #     "labels": "audit:security,severity:critical"
 #   }
 # ]
 #
-# Output: JSON-Array mit erstellten Issue-Nummern
+# Output: JSON array of created issue numbers
 
 set -euo pipefail
 
@@ -21,19 +21,19 @@ MAX_ISSUES="${2:-30}"
 DELAY_SECONDS=2
 
 if ! command -v gh &>/dev/null; then
-  echo "Error: gh CLI nicht installiert" >&2
+  echo "Error: gh CLI not installed" >&2
   exit 1
 fi
 
 if ! gh auth status &>/dev/null 2>&1; then
-  echo "Error: gh nicht authentifiziert" >&2
+  echo "Error: gh not authenticated" >&2
   exit 1
 fi
 
 total=$(jq 'length' "$FINDINGS_FILE")
 limit=$((total > MAX_ISSUES ? MAX_ISSUES : total))
 
-echo "Erstelle $limit von $total Issues..." >&2
+echo "Creating $limit of $total issues..." >&2
 
 results=()
 created=0
@@ -48,7 +48,7 @@ while IFS= read -r finding; do
     --body "$body" \
     --label "$labels" \
     2>/dev/null) || {
-    echo "  ⚠ Fehler beim Erstellen: $title" >&2
+    echo "  ⚠ Error creating: $title" >&2
     continue
   }
 
@@ -61,7 +61,7 @@ while IFS= read -r finding; do
   sleep "$DELAY_SECONDS"
 done < <(jq -c '.[]' "$FINDINGS_FILE" | head -n "$MAX_ISSUES")
 
-# JSON-Array ausgeben
+# Output JSON array
 printf '[\n'
 for i in "${!results[@]}"; do
   [ "$i" -gt 0 ] && printf ',\n'
@@ -72,5 +72,5 @@ printf '\n]\n'
 if [ "$total" -gt "$MAX_ISSUES" ]; then
   skipped=$((total - MAX_ISSUES))
   echo "" >&2
-  echo "⚠ $skipped Findings übersprungen (Limit: $MAX_ISSUES)." >&2
+  echo "⚠ $skipped findings skipped (limit: $MAX_ISSUES)." >&2
 fi

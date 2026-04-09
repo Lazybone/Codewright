@@ -1,20 +1,20 @@
-# Commit-Konventionen für Issue-Fixes
+# Commit Conventions for Issue Fixes
 
 ## Format
 
 ```
-fix: <kurze Beschreibung im Imperativ> (closes #<NUMMER>)
+fix: <short description in imperative> (closes #<NUMBER>)
 
-<Optionaler Body: Was wurde geändert und warum.
-Beschreibe den Root Cause und die gewählte Lösung.
-Maximal 72 Zeichen pro Zeile.>
+<Optional body: What was changed and why.
+Describe the root cause and the chosen solution.
+Maximum 72 characters per line.>
 
-Fixes #<NUMMER>
+Fixes #<NUMBER>
 ```
 
-## Beispiele
+## Examples
 
-### Einfacher Fix
+### Simple Fix
 ```
 fix: prevent null pointer in user validation (closes #142)
 
@@ -25,7 +25,7 @@ appropriate error message.
 Fixes #142
 ```
 
-### Fix mit mehreren Dateien
+### Fix with Multiple Files
 ```
 fix: resolve race condition in data sync (closes #87)
 
@@ -41,13 +41,13 @@ Changed files:
 Fixes #87
 ```
 
-## Regeln
+## Rules
 
-1. Erste Zeile: Maximal 50 Zeichen (ohne Issue-Referenz)
-2. Imperativ verwenden: "fix" nicht "fixed" oder "fixes"
-3. Kein Punkt am Ende der ersten Zeile
-4. Leerzeile zwischen Betreff und Body
-5. Body erklärt WAS und WARUM, nicht WIE (das steht im Diff)
-6. `Fixes #<N>` am Ende sorgt dafür dass GitHub das Issue automatisch schließt
-7. Prüfe ob das Projekt eigene Konventionen hat (CONTRIBUTING.md) und
-   bevorzuge diese
+1. First line: Maximum 50 characters (excluding issue reference)
+2. Use imperative: "fix" not "fixed" or "fixes"
+3. No period at the end of the first line
+4. Blank line between subject and body
+5. Body explains WHAT and WHY, not HOW (that is in the diff)
+6. `Fixes #<N>` at the end ensures GitHub automatically closes the issue
+7. Check if the project has its own conventions (CONTRIBUTING.md) and
+   prefer those

@@ -56,4 +56,4 @@ disable-model-invocation: true  # Optional: prevents direct model invocation
 
 ## Language
 
-All skill content, agent prompts, reports, and user-facing output are in **German**. Technical terms and code identifiers remain in English.
+All skill content, agent prompts, reports, and user-facing output are in **English**. SKILL.md description fields include both English (primary) and German (secondary) trigger phrases for backward compatibility.

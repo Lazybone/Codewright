@@ -1,51 +1,51 @@
-# Agent-Invocation Standard
+# Agent Invocation Standard
 
-Zentrale Referenz für die Nutzung des **Agent**-Tools in allen Codewright-Skills.
+Central reference for using the **Agent** tool in all Codewright skills.
 
 ---
 
-## 1. Agenten starten
+## 1. Starting Agents
 
-Agenten werden über das `Agent`-Tool von Claude Code gestartet. Es gibt zwei Modi:
+Agents are started via the `Agent` tool in Claude Code. There are two modes:
 
 ### Read-Only (Explore)
 
-Für reine Analyse ohne Code-Änderungen:
+For pure analysis without code changes:
 
 ```
 Agent(
   subagent_type="Explore",
-  prompt="Lies die Datei agents/<name>.md und führe die Anweisungen aus.
-    Projekt: <PROJECT_ROOT>
-    Kontext: <ZUSÄTZLICHER_KONTEXT>"
+  prompt="Read the file agents/<name>.md and execute the instructions.
+    Project: <PROJECT_ROOT>
+    Context: <ADDITIONAL_CONTEXT>"
 )
 ```
 
-- Der Agent kann Dateien lesen, suchen und analysieren.
-- Er darf **keine** Dateien erstellen oder ändern.
+- The agent can read, search, and analyze files.
+- It must **not** create or modify files.
 
 ### Code-Changing (Auto Mode)
 
-Für Agenten die Dateien ändern oder erstellen dürfen:
+For agents that are allowed to modify or create files:
 
 ```
 Agent(
   mode="auto",
-  prompt="Lies die Datei agents/<name>.md und führe die Anweisungen aus.
-    Projekt: <PROJECT_ROOT>
-    Dateien die du ändern darfst: <FILE_LIST>
-    Kontext: <ZUSÄTZLICHER_KONTEXT>"
+  prompt="Read the file agents/<name>.md and execute the instructions.
+    Project: <PROJECT_ROOT>
+    Files you may modify: <FILE_LIST>
+    Context: <ADDITIONAL_CONTEXT>"
 )
 ```
 
-- Der Agent darf Dateien lesen, erstellen und ändern.
-- Die erlaubten Dateien **immer explizit** im Prompt angeben.
+- The agent may read, create, and modify files.
+- The allowed files must **always be explicitly** specified in the prompt.
 
 ---
 
-## 2. Parallele Ausführung
+## 2. Parallel Execution
 
-Mehrere Agenten können gleichzeitig in einem Nachrichtenblock gestartet werden:
+Multiple agents can be started simultaneously in a single message block:
 
 ```
 Agent(
@@ -63,64 +63,64 @@ Agent(
 )
 ```
 
-- Jeden Agenten mit `run_in_background=true` und einem eindeutigen `name` starten.
-- Auf **alle** Agenten warten, bevor die Ergebnisse zusammengeführt werden.
-- Die Reihenfolge der Fertigstellung ist nicht garantiert.
+- Start each agent with `run_in_background=true` and a unique `name`.
+- Wait for **all** agents before merging the results.
+- The order of completion is not guaranteed.
 
 ---
 
-## 3. Rückgabeformat
+## 3. Return Format
 
-Agenten liefern ihre Ergebnisse als **Markdown-Text** in ihrer letzten Nachricht zurück. Der Koordinator liest diese Antwort und verarbeitet sie weiter.
+Agents return their results as **Markdown text** in their last message. The coordinator reads this response and processes it further.
 
-Erwartetes Format für Findings:
+Expected format for findings:
 
 ```markdown
 ## Findings
 
-### [SEVERITY] Kurzbeschreibung
-- **Datei:** pfad/zur/datei.ts
-- **Zeile:** 42
-- **Problem:** Beschreibung des Problems
-- **Empfehlung:** Vorgeschlagene Lösung
+### [SEVERITY] Short description
+- **File:** path/to/file.ts
+- **Line:** 42
+- **Problem:** Description of the problem
+- **Recommendation:** Suggested fix
 ```
 
 ---
 
-## 4. Keine Findings
+## 4. No Findings
 
-Wenn ein Agent keine Probleme findet, muss er explizit mit diesem Format antworten:
+When an agent finds no issues, it must explicitly respond with this format:
 
 ```markdown
-## Ergebnis
+## Result
 
-Keine Findings in diesem Bereich. Die analysierten Dateien sind sauber.
+No findings in this area. The analyzed files are clean.
 
-**Geprüfte Bereiche:** <Liste>
-**Geprüfte Dateien:** <Anzahl>
+**Checked areas:** <list>
+**Checked files:** <count>
 ```
 
-Niemals eine leere Antwort oder nur "alles ok" zurückgeben — die strukturierte Angabe der geprüften Bereiche und Dateianzahl ist Pflicht.
+Never return an empty response or just "all ok" — the structured indication of checked areas and file count is mandatory.
 
 ---
 
-## 5. Fehlerbehandlung
+## 5. Error Handling
 
-### Agent antwortet nicht
-- Maximal **5 Minuten** warten.
-- Danach den Nutzer informieren: welcher Agent nicht reagiert hat und welcher Bereich betroffen ist.
+### Agent does not respond
+- Wait a maximum of **5 minutes**.
+- Then inform the user: which agent did not respond and which area is affected.
 
-### Agent meldet einen Fehler
-- Prüfen, ob ein benötigtes Tool nicht verfügbar ist.
-- Dem Nutzer anbieten, den betroffenen Bereich zu überspringen.
-- Die restlichen Ergebnisse trotzdem auswerten.
+### Agent reports an error
+- Check whether a required tool is unavailable.
+- Offer the user to skip the affected area.
+- Still evaluate the remaining results.
 
-### Tool nicht installiert
-- Der Agent erstellt ein **INFO**-Finding:
+### Tool not installed
+- The agent creates an **INFO** finding:
 
 ```markdown
-### [INFO] Tool nicht verfügbar
-- **Tool:** <Tool-Name>
-- **Problem:** Tool X nicht verfügbar, Bereich Y konnte nicht geprüft werden.
-- **Empfehlung:** Tool installieren oder Bereich manuell prüfen.
+### [INFO] Tool not available
+- **Tool:** <tool-name>
+- **Problem:** Tool X not available, area Y could not be checked.
+- **Recommendation:** Install the tool or check the area manually.
 ```

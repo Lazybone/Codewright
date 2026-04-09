@@ -1,79 +1,79 @@
-# Browser-Verifikation mit MCP Google DevTools
+# Browser Verification with MCP Google DevTools
 
-Wenn ein Issue ein visuelles Problem, ein Frontend-Bug oder ein Browser-spezifisches
-Verhalten betrifft, nutze MCP Google DevTools zur Verifikation.
+When an issue involves a visual problem, a frontend bug, or browser-specific
+behavior, use MCP Google DevTools for verification.
 
-## Wann Browser-Verifikation nutzen
+## When to Use Browser Verification
 
-Verwende DevTools wenn das Issue eines dieser Themen betrifft:
-- Layout/CSS-Probleme (Elemente falsch positioniert, fehlende Styles)
-- JavaScript-Fehler in der Browser-Konsole
-- Netzwerk-Anfragen die fehlschlagen (API-Calls, Asset-Loading)
-- Interaktions-Bugs (Klick-Handler, Formulare, Navigation)
-- Responsive-Design-Probleme
-- Performance-Probleme (langsames Rendering, Memory Leaks)
+Use DevTools when the issue involves one of these topics:
+- Layout/CSS problems (elements incorrectly positioned, missing styles)
+- JavaScript errors in the browser console
+- Network requests that fail (API calls, asset loading)
+- Interaction bugs (click handlers, forms, navigation)
+- Responsive design problems
+- Performance problems (slow rendering, memory leaks)
 
-## Vorgehensweise
+## Procedure
 
-### 1. Dev-Server starten
+### 1. Start Dev Server
 
-Stelle sicher dass die Anwendung lokal läuft:
+Make sure the application is running locally:
 ```bash
-# Erkenne den Start-Befehl aus package.json, Makefile, etc.
-npm run dev    # oder yarn dev, pnpm dev
+# Detect the start command from package.json, Makefile, etc.
+npm run dev    # or yarn dev, pnpm dev
 python manage.py runserver
 cargo run
 ```
 
-Warte bis der Server bereit ist und notiere die URL (meist http://localhost:3000
-oder http://localhost:8080).
+Wait until the server is ready and note the URL (usually http://localhost:3000
+or http://localhost:8080).
 
-### 2. Seite im Browser öffnen
+### 2. Open Page in Browser
 
-Nutze die MCP Google DevTools um:
-- Die relevante Seite zu öffnen
-- Zum betroffenen Bereich zu navigieren
-- Die Reproduktionsschritte aus dem Issue durchzuführen
+Use MCP Google DevTools to:
+- Open the relevant page
+- Navigate to the affected area
+- Perform the reproduction steps from the issue
 
-### 3. Vor dem Fix: Bug dokumentieren
+### 3. Before the Fix: Document the Bug
 
-Prüfe und dokumentiere:
-- **Console**: JavaScript-Fehler oder Warnungen
-- **Network**: Fehlgeschlagene Requests (4xx, 5xx, CORS)
-- **Elements**: DOM-Struktur und berechnete Styles
-- **Screenshots**: Visuellen Zustand festhalten
+Check and document:
+- **Console**: JavaScript errors or warnings
+- **Network**: Failed requests (4xx, 5xx, CORS)
+- **Elements**: DOM structure and computed styles
+- **Screenshots**: Capture the visual state
 
-### 4. Nach dem Fix: Verifikation
+### 4. After the Fix: Verification
 
-Lade die Seite neu und wiederhole die Reproduktionsschritte:
-- Bug sollte nicht mehr auftreten
-- Keine neuen Konsolen-Fehler
-- Keine neuen fehlgeschlagenen Netzwerk-Requests
-- Visuelles Ergebnis entspricht dem erwarteten Verhalten
+Reload the page and repeat the reproduction steps:
+- Bug should no longer occur
+- No new console errors
+- No new failed network requests
+- Visual result matches the expected behavior
 
-### 5. Ergebnis dokumentieren
+### 5. Document the Result
 
 ```
-## Browser-Verifikation
+## Browser Verification
 
-### Vorher
-- Console-Fehler: <ja/nein, welche>
-- Visuelles Problem: <Beschreibung>
-- Network-Fehler: <ja/nein, welche>
+### Before
+- Console errors: <yes/no, which ones>
+- Visual problem: <description>
+- Network errors: <yes/no, which ones>
 
-### Nachher
-- Console-Fehler: <behoben/keine neuen>
-- Visuelles Ergebnis: <korrekt/Beschreibung>
-- Network-Status: <alle Requests erfolgreich>
+### After
+- Console errors: <fixed/no new ones>
+- Visual result: <correct/description>
+- Network status: <all requests successful>
 
-### Fazit
-Bug behoben: ja/nein
-Neue Probleme: ja/nein
+### Conclusion
+Bug fixed: yes/no
+New problems: yes/no
 ```
 
-## Fallback ohne MCP DevTools
+## Fallback Without MCP DevTools
 
-Wenn MCP Google DevTools nicht verfügbar ist:
-1. Informiere den User dass manuelle Browser-Tests empfohlen werden
-2. Beschreibe die genauen Schritte die der User im Browser durchführen soll
-3. Verlasse dich auf die automatischen Tests als primäre Verifikation
+If MCP Google DevTools is not available:
+1. Inform the user that manual browser tests are recommended
+2. Describe the exact steps the user should perform in the browser
+3. Rely on the automated tests as the primary verification

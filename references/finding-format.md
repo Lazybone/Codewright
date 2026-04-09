@@ -1,26 +1,26 @@
-# Finding-Format — Gemeinsame Referenz für alle Agenten
+# Finding Format — Shared Reference for All Agents
 
-Jeder Subagent liefert seine Findings in diesem einheitlichen Format.
-Das ermöglicht dem Koordinator die Konsolidierung und Deduplizierung.
+Every subagent delivers its findings in this unified format.
+This enables the coordinator to consolidate and deduplicate.
 
-## Format pro Finding
+## Format per Finding
 
 ```
-### [<TAG>] <Kurztitel>
+### [<TAG>] <Short title>
 
 - **Severity**: critical / high / medium / low
-- **Datei**: `pfad/zur/datei.ext` (Zeile X-Y)
-- **Kategorie**: <agent-spezifische Kategorie>
-- **Fixbar**: auto / manual / info
-- **Beschreibung**: Was ist das Problem? (1-3 Sätze)
-- **Auswirkung**: Was passiert wenn nichts getan wird? (1-2 Sätze)
-- **Empfehlung**: Konkreter Fix-Vorschlag
-- **Code-Kontext** (optional, max 10 Zeilen)
+- **File**: `path/to/file.ext` (line X-Y)
+- **Category**: <agent-specific category>
+- **Fixable**: auto / manual / info
+- **Description**: What is the problem? (1-3 sentences)
+- **Impact**: What happens if nothing is done? (1-2 sentences)
+- **Recommendation**: Concrete fix suggestion
+- **Code context** (optional, max 10 lines)
 ```
 
-## Agent-Tags
+## Agent Tags
 
-| Agent | Tag | Skills | Beispiel-Kategorien |
+| Agent | Tag | Skills | Example categories |
 |-------|-----|--------|---------------------|
 | Security Auditor | `[SECURITY]` | audit-project, codebase-doctor | secrets, injection, config, crypto, validation, dependency |
 | Bug Detector | `[BUG]` | audit-project, codebase-doctor | logic, error-handling, async, null-safety, resource-leak, type-safety, lint |
@@ -33,49 +33,49 @@ Das ermöglicht dem Koordinator die Konsolidierung und Deduplizierung.
 | Frontend Reviewer | `[FRONTEND]` | codebase-doctor | xss, dom-safety, sensitive-data, csrf, js-quality, assets, accessibility |
 | Architecture Reviewer | `[ARCH]` | codebase-doctor | structure, coupling, separation, config, error-arch, tests, docs |
 
-## Fixbar-Bewertung
+## Fixable Rating
 
-| Wert | Bedeutung | Beispiele |
-|------|-----------|-----------|
-| `auto` | Kann sicher automatisch behoben werden | Unused imports, bare except, fehlende await |
-| `manual` | Braucht menschliche Entscheidung | Architektur-Änderungen, API-Redesign |
-| `info` | Nur zur Kenntnis | Empfehlung für Audit-Tool, positive Beobachtung |
+| Value | Meaning | Examples |
+|-------|---------|----------|
+| `auto` | Can be safely fixed automatically | Unused imports, bare except, missing await |
+| `manual` | Requires human decision | Architecture changes, API redesign |
+| `info` | For information only | Recommendation for audit tool, positive observation |
 
-## Severity-Richtlinien
+## Severity Guidelines
 
 ### 🔴 critical
-- Aktive Sicherheitslücke (exponierter Secret, SQL Injection)
-- Datenverlust-Risiko
-- Anwendung crashed in Produktion
+- Active security vulnerability (exposed secret, SQL injection)
+- Data loss risk
+- Application crashes in production
 
 ### 🟠 high
-- Sicherheitsrisiko (unsichere Dependencies mit bekanntem CVE)
-- Schwere Bugs die Kernfunktionalität betreffen
-- Fehlende essenzielle Projektdateien (README, LICENSE)
-- Unmaintained Dependencies
+- Security risk (insecure dependencies with known CVE)
+- Severe bugs affecting core functionality
+- Missing essential project files (README, LICENSE)
+- Unmaintained dependencies
 
 ### 🟡 medium
-- Potenzielle Bugs (unbehandelte Errors, Race Conditions)
-- Veraltete Dependencies (Major-Updates ausstehend)
-- Code-Qualitätsprobleme die Wartbarkeit beeinträchtigen
-- Fehlende Tests für kritische Bereiche
+- Potential bugs (unhandled errors, race conditions)
+- Outdated dependencies (major updates pending)
+- Code quality issues affecting maintainability
+- Missing tests for critical areas
 
 ### 🟢 low
-- Code-Cleanup (Dead Code, auskommentierter Code)
-- Style-Inkonsistenzen
-- Stale Issues
-- Nice-to-have Verbesserungen
-- TODO/FIXME ohne Issue-Referenz
+- Code cleanup (dead code, commented-out code)
+- Style inconsistencies
+- Stale issues
+- Nice-to-have improvements
+- TODO/FIXME without issue reference
 
-## Regeln
+## Rules
 
-1. **Ein Finding pro Problem** — nicht mehrere Probleme in einem Finding bündeln
-   (Ausnahme: "47 unbenutzte Imports" darf ein Finding sein).
-2. **Kontext ist Pflicht** — Jedes Finding muss nachvollziehbar sein.
-   Datei + Zeile + Beschreibung mindestens.
-3. **Empfehlung muss umsetzbar sein** — "Code verbessern" ist keine
-   Empfehlung. "Ersetze `md5(password)` durch `bcrypt.hash(password)`" schon.
-4. **False Positives vermeiden** — Im Zweifel den Code-Kontext lesen.
-   Lieber weniger Findings als viele falsche.
-5. **Test-Code milder bewerten** — Ein `any` in einer Test-Fixture ist
-   weniger kritisch als in Produktionscode.
+1. **One finding per problem** — do not bundle multiple problems in one finding
+   (Exception: "47 unused imports" may be a single finding).
+2. **Context is mandatory** — Every finding must be traceable.
+   File + line + description at minimum.
+3. **Recommendation must be actionable** — "Improve code" is not a
+   recommendation. "Replace `md5(password)` with `bcrypt.hash(password)`" is.
+4. **Avoid false positives** — When in doubt, read the code context.
+   Fewer findings are better than many incorrect ones.
+5. **Judge test code more leniently** — An `any` in a test fixture is
+   less critical than in production code.

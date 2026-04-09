@@ -1,41 +1,41 @@
-# Refactoring Abschlussbericht Template
+# Refactoring Final Report Template
 
 ## Template
 
 ```markdown
-# Refactoring Abschlussbericht
+# Refactoring Final Report
 
-## Zusammenfassung
-- X Dateien refactored
-- Y Issues behoben
-- Z neue Commits
+## Summary
+- X files refactored
+- Y issues fixed
+- Z new commits
 
-## Aenderungen nach Kategorie
+## Changes by Category
 
-### Dead Code entfernt
+### Dead Code Removed
 - ...
 
-### Struktur verbessert
+### Structure Improved
 - ...
 
-### Code-Qualitaet
+### Code Quality
 - ...
 
-## Test-Ergebnis
-- Build: OK/FEHLGESCHLAGEN
-- Tests: X/Y bestanden
+## Test Result
+- Build: OK/FAILED
+- Tests: X/Y passed
 
-## Offene Punkte
-- Dinge die manuelle Review brauchen
-- Vorschlaege fuer Follow-up Refactorings
+## Open Items
+- Things that need manual review
+- Suggestions for follow-up refactorings
 
 ## Git Log
-[komprimierte Commit-Historie des Branches]
+[condensed commit history of the branch]
 ```
 
-## Hinweise
+## Notes
 
-- **Zusammenfassung zuerst** — der User will schnell wissen was passiert ist
-- **Aenderungen nach Kategorie** — hilft beim Verstaendnis des Umfangs
-- **Offene Punkte ehrlich dokumentieren** — nicht alles kann automatisch geloest werden
-- **Git Log beifuegen** — Transparenz ueber alle Commits auf dem Refactoring-Branch
+- **Summary first** — the user wants to quickly know what happened
+- **Changes by category** — helps understand the scope
+- **Document open items honestly** — not everything can be resolved automatically
+- **Include git log** — transparency about all commits on the refactoring branch
