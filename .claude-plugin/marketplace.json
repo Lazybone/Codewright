@@ -1,18 +1,16 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "Lazybone-Codewright",
+  "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.",
   "owner": {
     "name": "Lazybone"
-  },
-  "metadata": {
-    "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.",
-    "homepage": "https://github.com/Lazybone/Codewright"
   },
   "plugins": [
     {
       "name": "codewright",
+      "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.",
       "version": "0.1.2",
-      "source": ".",
-      "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits."
+      "source": "./"
     }
   ]
 }
