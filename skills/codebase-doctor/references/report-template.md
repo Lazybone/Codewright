@@ -19,15 +19,15 @@
 
 | Severity | Gefunden | Auto-Fix | Manual | Info |
 |----------|----------|----------|--------|------|
-| CRITICAL | <N> | <N> | <N> | - |
-| HIGH | <N> | <N> | <N> | - |
-| MEDIUM | <N> | <N> | <N> | - |
-| LOW | <N> | <N> | <N> | - |
+| 🔴 CRITICAL | <N> | <N> | <N> | - |
+| 🟠 HIGH | <N> | <N> | <N> | - |
+| 🟡 MEDIUM | <N> | <N> | <N> | - |
+| 🟢 LOW | <N> | <N> | <N> | - |
 | **Gesamt** | **<N>** | **<N>** | **<N>** | **<N>** |
 
 ---
 
-## CRITICAL Findings
+## 🔴 Critical Findings
 
 ### <Nr>. <Titel>
 - **Tag**: [SECURITY/BUG/etc.]
@@ -38,13 +38,13 @@
 
 ---
 
-## HIGH Findings
+## 🟠 High Findings
 ...
 
-## MEDIUM Findings
+## 🟡 Medium Findings
 ...
 
-## LOW Findings
+## 🟢 Low Findings
 ...
 
 ---

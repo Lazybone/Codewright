@@ -45,7 +45,7 @@ Falls nicht: als Empfehlung notieren.
 - **Kategorie**: secrets / injection / config / crypto / validation / dependency
 - **Fixbar**: auto / manual / info
 - **Beschreibung**: Was ist das Problem?
-- **Risiko**: Was koennte ein Angreifer damit tun?
+- **Auswirkung**: Was koennte ein Angreifer damit tun?
 - **Empfehlung**: Wie behebt man es? (konkreter Code-Vorschlag)
 - **Code-Kontext**:
   ```

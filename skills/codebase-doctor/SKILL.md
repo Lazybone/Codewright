@@ -88,10 +88,10 @@ Nach Abschluss aller 7 Agenten:
 
 1. **Deduplizieren** — Gleiche Findings aus verschiedenen Agenten zusammenfuehren
 2. **Severity zuweisen**:
-   - CRITICAL: Aktive Sicherheitsluecke, Datenverlust, Crashes
-   - HIGH: Sicherheitsrisiko, schwere Bugs, CVEs
-   - MEDIUM: Potenzielle Bugs, veraltete Deps, Wartbarkeitsprobleme
-   - LOW: Cleanup, Style, nice-to-have
+   - 🔴 CRITICAL: Aktive Sicherheitsluecke, Datenverlust, Crashes
+   - 🟠 HIGH: Sicherheitsrisiko, schwere Bugs, CVEs
+   - 🟡 MEDIUM: Potenzielle Bugs, veraltete Deps, Wartbarkeitsprobleme
+   - 🟢 LOW: Cleanup, Style, nice-to-have
 3. **Fixbarkeit bewerten**:
    - AUTO-FIX: Kann sicher automatisch behoben werden
    - MANUAL: Braucht menschliche Entscheidung
