@@ -1,15 +1,13 @@
-# codewright
+# Codewright
 
-A Claude Code plugin with multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.
+A [Claude Code](https://claude.ai/code) plugin with multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.
 
 ## Installation
 
-```bash
-# From the marketplace
-/plugin install codewright
+In Claude Code:
 
-# Test locally
-claude --plugin-dir /path/to/ClaudeCodeSkills
+```
+/plugin install github:Lazybone/Codewright
 ```
 
 ## Skills
