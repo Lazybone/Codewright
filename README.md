@@ -59,6 +59,54 @@ Orchestrates a full project refactoring with autonomous subagents. A teamleader 
 
 **Configuration:** Scope, aggressiveness (`conservative`/`moderate`/`aggressive`), dry-run mode.
 
+### codebase-onboarding
+
+Analyzes a codebase and generates architecture documentation and getting-started guides. 3 agents: Structure Scanner → Architecture Analyzer → Doc Writer.
+
+```
+/codewright:codebase-onboarding
+```
+
+**Output:** `ARCHITECTURE.md` and/or `GETTING-STARTED.md`
+
+---
+
+### test-engineer
+
+Finds missing tests, identifies coverage gaps, and writes tests automatically. 2-wave approach: analyze coverage & risk, then generate and review tests.
+
+```
+/codewright:test-engineer
+```
+
+**Modes:** `report-only`, `critical-paths`, `full-coverage` (default)
+
+---
+
+### pr-reviewer
+
+Multi-perspective code review of a Pull Request using 3 parallel agents (Logic, Security, Quality). Optionally posts review as GitHub PR comment.
+
+```
+/codewright:pr-reviewer
+```
+
+**Usage:** Pass a PR number or URL as argument.
+
+---
+
+### perf-analyzer
+
+Identifies performance bottlenecks using up to 4 parallel agents (Bundle, Query, Runtime, Infra). Smart agent selection based on project type.
+
+```
+/codewright:perf-analyzer
+```
+
+**Output:** `PERFORMANCE-REPORT.md` with impact-sorted findings.
+
+---
+
 ## Requirements
 
 - [Claude Code](https://claude.ai/code) with plugin support

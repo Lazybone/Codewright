@@ -5,6 +5,15 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.0] - 2026-04-09
+
+### Added
+
+- **codebase-onboarding**: New skill — analyzes codebases and generates ARCHITECTURE.md / GETTING-STARTED.md (3 agents).
+- **test-engineer**: New skill — finds coverage gaps and writes missing tests in 2 waves (5 agents).
+- **pr-reviewer**: New skill — multi-perspective PR review with 3 parallel agents (Logic, Security, Quality).
+- **perf-analyzer**: New skill — performance bottleneck analysis with smart agent selection (4 agents: Bundle, Query, Runtime, Infra).
+
 ## [1.2.0] - 2026-04-09
 
 ### Changed
