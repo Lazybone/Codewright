@@ -7,7 +7,8 @@ A [Claude Code](https://claude.ai/code) plugin with multi-agent skills for autom
 In Claude Code:
 
 ```
-/plugin install github:Lazybone/Codewright
+/plugin marketplace add Lazybone/Codewright
+/plugin install codewright@Lazybone-Codewright
 ```
 
 ## Skills
