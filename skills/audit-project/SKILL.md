@@ -88,6 +88,7 @@ Lies die jeweilige Agent-Datei und starte den Agenten:
 | 4 | Structure Reviewer | `agents/structure.md` | Explore | Projektstruktur & Best Practices |
 | 5 | Issues Auditor | `agents/issues.md` | Explore | GitHub Issues analysieren |
 
+Starte die Agenten gemäß `../../references/agent-invocation.md` als Explore-Subagenten.
 Starte alle 5 parallel als Explore-Subagenten (read-only Codebase-Zugriff).
 Jeder Agent liefert Findings im Format aus `references/finding-format.md`.
 

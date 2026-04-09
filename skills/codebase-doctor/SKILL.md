@@ -66,6 +66,7 @@ find . -type f \
 ## Phase 1: Wave 1 — Analyse (7 parallele Agenten)
 
 Starte **7 Agenten gleichzeitig** als Explore-Subagenten (read-only).
+Starte die Agenten gemäß `../../references/agent-invocation.md` als Explore-Subagenten.
 Lies die jeweilige Agent-Datei und uebergib sie als Prompt.
 
 | # | Agent | Datei | Fokus |

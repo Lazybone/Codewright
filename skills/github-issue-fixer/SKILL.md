@@ -51,6 +51,7 @@ gh issue view <ISSUE_NUMBER> --json title,body,labels,comments,assignees
 ```
 
 Starte dann einen **Explore-Subagenten** für die Codebase-Analyse.
+Starte den Agenten gemäß `../../references/agent-invocation.md`.
 Lies dazu die Anweisungen in `agents/analyzer.md` und übergib dem Agenten:
 
 - Den vollständigen Issue-Text (Titel, Body, Kommentare)
@@ -68,6 +69,7 @@ ob das Issue geschlossen werden soll. Beende den Workflow.
 ### Phase 2: Fix-Plan erstellen
 
 Starte einen **Plan-Subagenten** mit den Ergebnissen aus Phase 1.
+Starte den Agenten gemäß `../../references/agent-invocation.md`.
 Lies dazu `agents/planner.md` und übergib:
 
 - Die Analyse-Ergebnisse (betroffene Dateien, Root Cause)
