@@ -62,7 +62,7 @@ disable-model-invocation: true  # Optional: prevents direct model invocation
   - `.claude-plugin/plugin.json`
   - `.claude-plugin/marketplace.json`
   - `CHANGELOG.md`
-- After pushing, **always create and push a git tag** (`v0.3.1`, etc.) — the plugin marketplace reads the version from tags.
+- The plugin marketplace reads the version from `plugin.json` (not git tags). Users must run `/plugin update` or clear their cache to get the new version.
 
 ## Language
 
