@@ -5,6 +5,12 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.0] - 2026-04-11
+
+### Added
+
+- **auto-dev**: New skill — universal autonomous task executor with adaptive questions, parallel implementation agents, and iterative review-fix loop (8 agent types, 6 phases).
+
 ## [0.2.0] - 2026-04-09
 
 ### Added

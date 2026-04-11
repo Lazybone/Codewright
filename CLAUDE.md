@@ -31,6 +31,7 @@ skills/
 | `codebase-doctor` | `/codewright:codebase-doctor` | 3-wave: 7 Explore → Fix → Review agents |
 | `github-issue-fixer` | `/codewright:github-issue-fixer` | Sequential: Explore → Plan → Fix → Verify → Commit |
 | `refactor-orchestrator` | `/codewright:refactor-orchestrator` | Teamleader + Scout/Architect/Worker/Test agents (agents/ + references/) |
+| `auto-dev` | `/codewright:auto-dev` | Teamleader + Analyst/Planner/Workers/Reviewers/Fixers (6 phases, review-fix loop) |
 
 ## Skill File Format
 
