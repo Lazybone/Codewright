@@ -55,6 +55,15 @@ disable-model-invocation: true  # Optional: prevents direct model invocation
 - **Finding format**: Both `audit-project` and `codebase-doctor` share a standardized finding format defined in their respective `references/finding-format.md`.
 - **User confirmation gates**: All skills pause before destructive actions (creating issues, committing, merging) and ask the user.
 
+## Versioning & Release
+
+- **Auto-increment patch version** on every change (e.g., `0.3.0` → `0.3.1` → `0.3.2`). Only bump minor/major when the user explicitly says so.
+- Version must be updated in ALL three files simultaneously:
+  - `.claude-plugin/plugin.json`
+  - `.claude-plugin/marketplace.json`
+  - `CHANGELOG.md`
+- After pushing, **always create and push a git tag** (`v0.3.1`, etc.) — the plugin marketplace reads the version from tags.
+
 ## Language
 
 All skill content, agent prompts, reports, and user-facing output are in **English**. SKILL.md description fields include both English (primary) and German (secondary) trigger phrases for backward compatibility.
