@@ -59,6 +59,22 @@ Orchestrates a full project refactoring with autonomous subagents. A teamleader 
 
 **Configuration:** Scope, aggressiveness (`conservative`/`moderate`/`aggressive`), dry-run mode.
 
+---
+
+### auto-dev
+
+Universal autonomous development agent. Accepts any task (features, bugfixes, removals, refactoring), asks adaptive clarifying questions, creates an execution plan, implements with parallel agents, and verifies through an iterative review-fix loop (max 3 iterations).
+
+```
+/codewright:auto-dev
+```
+
+**Workflow:** Analyze & Questions → Plan → Execute (parallel workers) → Auto-Checks → Code Reviews → Fix Loop → Report
+
+**Agents:** Requirement Analyst, Planner, Code Workers, Test Runner, Logic/Security/Quality Reviewers, Fixers
+
+---
+
 ### codebase-onboarding
 
 Analyzes a codebase and generates architecture documentation and getting-started guides. 3 agents: Structure Scanner → Architecture Analyzer → Doc Writer.
