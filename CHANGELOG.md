@@ -5,6 +5,12 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.1] - 2026-04-12
+
+### Changed
+
+- **auto-dev**: Questions now include recommendations with reasoning. Questions are presented one at a time, waiting for user response before proceeding.
+
 ## [0.3.0] - 2026-04-11
 
 ### Added
