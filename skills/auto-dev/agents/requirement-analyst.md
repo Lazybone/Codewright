@@ -47,6 +47,7 @@ Based on the complexity, generate adaptive questions:
 - Ask about: scope boundaries, edge cases, error handling strategy, testing expectations, compatibility requirements
 - Do NOT ask questions whose answers are obvious from the codebase
 - If complexity is Low and everything is clear: 0 questions is valid
+- **Every question MUST include a recommendation with reasoning** — explain which option you recommend and why, based on your codebase analysis and industry best practices
 
 ## Output Format
 
@@ -73,8 +74,10 @@ Return a Markdown response in this exact format:
    - A) [Option]
    - B) [Option]
    - C) [Option]
+   - **Recommendation**: [Recommended option] — [1-2 sentences explaining why, based on codebase analysis or best practices]
 
 2. [Question text — open-ended if multiple choice doesn't fit]
+   - **Recommendation**: [Suggested approach] — [1-2 sentences explaining why]
 
 (If 0 questions needed, write: "No clarifying questions needed — the task is clear and well-defined.")
 ```

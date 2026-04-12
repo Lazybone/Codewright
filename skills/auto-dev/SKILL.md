@@ -101,7 +101,11 @@ Pass:
 1. Save the analysis to `{RUN_DIR}/task.md`
 2. If the agent generated questions:
    - Present questions **one at a time** to the user
+   - Each question includes a recommendation with reasoning — present it to the user
+   - **Wait for the user's answer or follow-up questions before presenting the next question**
+   - If the user has follow-up questions or wants clarification, answer them before moving on
    - Append each answer to `{RUN_DIR}/task.md`
+   - Do NOT batch or skip questions — the user controls the pace
 3. If 0 questions: proceed directly to Phase 2
 
 **After all questions are answered, inform the user:**
