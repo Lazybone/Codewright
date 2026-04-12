@@ -123,6 +123,20 @@ Identifies performance bottlenecks using up to 4 parallel agents (Bundle, Query,
 
 ---
 
+## Updating
+
+Enable auto-updates (recommended):
+
+```
+/plugin → Marketplaces → Lazybone-Codewright → Enable auto-update
+```
+
+Or update manually:
+
+```
+/plugin marketplace update Lazybone-Codewright
+```
+
 ## Requirements
 
 - [Claude Code](https://claude.ai/code) with plugin support
