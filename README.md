@@ -15,15 +15,14 @@ Works with [Claude Code](https://claude.ai/code) and [OpenCode](https://github.c
 
 ### OpenCode
 
-```bash
-# Install agents + skills to .opencode/
-bash platforms/opencode/setup.sh
+Paste this into your OpenCode session:
 
-# Add plugin to opencode.json
-# { "plugin": ["@codewright/opencode"] }
+```
+Install and configure Codewright for OpenCode by following the instructions here:
+https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md
 ```
 
-See [platforms/opencode/README.md](platforms/opencode/README.md) for details.
+Or install manually — see the [Installation Guide](platforms/opencode/INSTALL.md).
 
 ## Skills
 
