@@ -41,6 +41,8 @@ If the reproduction test still fails after your changes:
 
 Summary of changes:
 
+- **FIX_SUMMARY**: 2-3 sentence summary of what was changed and why
+  (used by reviewers and the Test-Writer in later waves)
 - Which files were changed (with path)
 - What was changed per file and why
 - Whether tests were added or modified
