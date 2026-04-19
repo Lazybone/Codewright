@@ -42,11 +42,11 @@ The coordinator passes you:
 
 ## Output Format
 
-Return findings using the format from `../../references/finding-format.md` with tag `[LOGIC]`.
+Return findings using the format from `../references/finding-format.md` with tag `[LOGIC]`.
 
 Categories: `correctness`, `edge-case`, `logic-error`, `missing-impl`, `error-handling`
 
-If no issues found, use the "No findings" format from `../../references/agent-invocation.md`.
+If no issues found, use the "No findings" format from `../../../references/agent-invocation.md`.
 
 ## Important
 

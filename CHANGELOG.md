@@ -5,6 +5,22 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.6] - 2026-04-19
+
+### Changed
+
+- **auto-dev**: Major upgrade to review pipeline, adopting github-issue-fixer patterns:
+  - 4 parallel reviewers always (Logic, Security, Quality, Architecture) instead of 1-3 selected by task type
+  - Dynamic reviewer participation — only reviewers with findings re-enter next round
+  - 5-iteration budget (shared between review-fix loop and acceptance) instead of 3
+  - New Phase 5: Test hardening with regression, edge-case, and error-path tests
+  - New Phase 6: Acceptance review — all 4 reviewers verify code + hardening tests together
+  - Report mode when iterations exhausted (no commit, findings documented) instead of simple keep/revert
+  - Optional UI mockup generation in Phase 2 — served via localhost for user review
+  - 3 new agents: architecture-reviewer, test-writer, mockup-designer
+  - New finding-format.md with consolidation rules for 4 reviewers
+  - Updated report template with hardening, acceptance, and report mode sections
+
 ## [0.3.5] - 2026-04-19
 
 ### Changed

@@ -32,29 +32,25 @@ The coordinator passes you:
 - Group independent packages into parallel groups
 - Order groups so dependencies are resolved before dependent packages start
 
-### 5. Select Review Strategy
-- Determine which reviewers are needed based on task type:
-
-| Task Type         | Reviewers                  |
-|-------------------|----------------------------|
-| New feature       | Logic + Quality            |
-| Security-relevant | Logic + Security + Quality |
-| Bugfix            | Logic                      |
-| Refactoring       | Logic + Quality            |
-| API change        | Logic + Security + Quality |
-| Simple change     | Logic                      |
-| Removal           | Logic                      |
-
-- Determine which auto-checks to run (test, lint, typecheck — based on what's available in the project)
+### 5. Assess UI Mockup Need
+- Determine whether the task involves UI/frontend changes that would benefit from a visual mockup
+- Set `ui_mockup: recommended` if:
+  - The task creates new UI components, pages, or layouts
+  - The task significantly changes existing visual appearance
+  - The design direction is ambiguous or has multiple valid approaches
+- Set `ui_mockup: not_needed` if:
+  - The task is backend-only, refactoring, or infrastructure
+  - The UI changes are trivial (text change, color tweak, etc.)
+  - The existing design system already dictates the outcome
 
 ## Output Format
 
-Return the plan as a Markdown response following the format defined in `references/plan-format.md`. The plan must include:
+Return the plan as a Markdown response following the format defined in `../references/plan-format.md`. The plan must include:
 
 1. **Task Overview** with goal and approach
 2. **Work Packages** with files, actions, descriptions, and dependencies
 3. **Execution Order** with parallel groups
-4. **Review Strategy** with selected reviewers and auto-checks
+4. **UI Mockup Assessment** with recommendation and rationale
 
 ## Important
 

@@ -36,10 +36,11 @@ The coordinator parses this to orchestrate Phase 3 (Execute).
 - **Parallel Group 1**: WP-1, WP-3 (independent — run simultaneously)
 - **Sequential after Group 1**: WP-2 (depends on WP-1)
 
-## Review Strategy
+## UI Mockup Assessment
 
-- **Auto-checks**: test, lint, typecheck (only those available in the project)
-- **Reviewers needed**: logic, quality (selected based on task type)
+- **ui_mockup**: recommended | not_needed
+- **Rationale**: [Why a mockup is or isn't useful for this task]
+- **UI Components** (if recommended): [List of components/pages to mockup]
 ```
 
 ## Rules

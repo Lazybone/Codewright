@@ -8,6 +8,7 @@ The coordinator passes you:
 - **PROJECT_ROOT**: Path to the project directory
 - **CHANGED_FILES**: List of files that were changed
 - **TASK_DESCRIPTION**: What the changes are supposed to accomplish
+- **PLAN_OVERVIEW**: The execution plan summary
 
 ## Procedure
 
@@ -45,11 +46,11 @@ The coordinator passes you:
 
 ## Output Format
 
-Return findings using the format from `../../references/finding-format.md` with tag `[SECURITY]`.
+Return findings using the format from `../references/finding-format.md` with tag `[SECURITY]`.
 
 Categories: `injection`, `auth`, `data-exposure`, `crypto`, `config`, `dependency`
 
-If no issues found, use the "No findings" format from `../../references/agent-invocation.md`.
+If no issues found, use the "No findings" format from `../../../references/agent-invocation.md`.
 
 ## Important
 

@@ -22,17 +22,18 @@ This enables the coordinator to consolidate and deduplicate.
 
 | Agent | Tag | Skills | Example categories |
 |-------|-----|--------|---------------------|
-| Security Auditor | `[SECURITY]` | audit-project, codebase-doctor | secrets, injection, config, crypto, validation, dependency |
+| Security Auditor / Reviewer | `[SECURITY]` | audit-project, codebase-doctor, github-issue-fixer, auto-dev | secrets, injection, config, crypto, validation, dependency |
 | Bug Detector | `[BUG]` | audit-project, codebase-doctor | logic, error-handling, async, null-safety, resource-leak, type-safety, lint |
 | Hygiene Inspector | `[HYGIENE]` | audit-project | dead-code, junk-file, gitignore, duplicate, unused-dep, large-file, commented-code |
 | Structure Reviewer | `[STRUCTURE]` | audit-project | missing-file, dependencies, tests, naming, config, folder-structure |
 | Issues Auditor | `[ISSUES]` | audit-project | stale, possibly-fixed, missing-issue, duplicate, unlabeled, quality |
-| Logic Reviewer | `[LOGIC]` | github-issue-fixer | correctness, edge-case, logic-error, missing-impl, error-handling |
+| Logic Reviewer | `[LOGIC]` | github-issue-fixer, auto-dev | correctness, edge-case, logic-error, missing-impl, error-handling |
+| Quality Reviewer | `[QUALITY]` | github-issue-fixer, auto-dev | complexity, duplication, naming, test-coverage, consistency, readability |
 | Code Quality | `[QUALITY]` | codebase-doctor | dead-code, commented-code, duplication, complexity, unused-dep, junk-file, naming |
 | API Consistency | `[API]` | codebase-doctor | url-pattern, response-format, validation, auth, frontend-sync, docs |
 | Dependency Analyzer | `[DEPS]` | codebase-doctor | vulnerability, outdated, conflict, bloat, license, build-config |
 | Frontend Reviewer | `[FRONTEND]` | codebase-doctor | xss, dom-safety, sensitive-data, csrf, js-quality, assets, accessibility |
-| Architecture Reviewer | `[ARCH]` | codebase-doctor | structure, coupling, separation, config, error-arch, tests, docs |
+| Architecture Reviewer | `[ARCH]` | codebase-doctor, github-issue-fixer, auto-dev | structure, coupling, separation, config, error-arch, tests, docs |
 
 ## Fixable Rating
 
