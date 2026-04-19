@@ -3,7 +3,7 @@
 ## Format
 
 ```
-fix: <short description in imperative> (closes #<NUMBER>)
+fix: <short description in imperative>
 
 <Optional body: What was changed and why.
 Describe the root cause and the chosen solution.
@@ -16,7 +16,7 @@ Fixes #<NUMBER>
 
 ### Simple Fix
 ```
-fix: prevent null pointer in user validation (closes #142)
+fix: prevent null pointer in user validation
 
 The validateUser function did not check for undefined email field
 before accessing its length property. Added null check with
@@ -27,7 +27,7 @@ Fixes #142
 
 ### Fix with Multiple Files
 ```
-fix: resolve race condition in data sync (closes #87)
+fix: resolve race condition in data sync
 
 The WebSocket handler and the REST polling were both writing to
 the same state without synchronization. Introduced a mutex lock
@@ -43,7 +43,7 @@ Fixes #87
 
 ## Rules
 
-1. First line: Maximum 50 characters (excluding issue reference)
+1. First line: Maximum 50 characters
 2. Use imperative: "fix" not "fixed" or "fixes"
 3. No period at the end of the first line
 4. Blank line between subject and body

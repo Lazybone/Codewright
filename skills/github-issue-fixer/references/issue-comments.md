@@ -59,7 +59,7 @@ Use the GitHub CLI to post comments and close issues:
 ### Comment and close (invalidated)
 ```bash
 gh issue comment <NUMBER> --body "<COMMENT_TEXT>"
-gh issue close <NUMBER> --reason "not planned" --comment "Closing: issue could not be confirmed."
+gh issue close <NUMBER> --reason "not planned"
 ```
 
 ### Comment (resolved — commit auto-closes via Fixes #N)

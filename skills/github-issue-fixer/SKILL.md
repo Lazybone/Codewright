@@ -251,7 +251,7 @@ for a final review of the complete state: all code changes AND all tests.
    b. Create the commit following `references/commit-conventions.md`:
       ```bash
       git add <changed-files>
-      git commit -m "fix: <description> (closes #<NUMBER>)
+      git commit -m "fix: <description>
 
       <Root cause and fix explanation>
 
