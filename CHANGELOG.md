@@ -5,6 +5,20 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.4.0] - 2026-04-19
+
+### Changed
+
+- **github-issue-fixer**: Complete redesign as 8-wave architecture:
+  - Wave 1: Dual-agent issue validation (Analyzer + Validator with independent second opinion)
+  - Wave 2: Enhanced planning with TDD test strategy
+  - Wave 3-4: TDD flow (reproduction test first, then fix)
+  - Wave 5: Iterative review-fix loop with 4 parallel reviewers (Logic, Security, Quality, Architecture) — max 5 iterations
+  - Wave 6: Test hardening with regression and edge-case tests
+  - Wave 7: Final acceptance review by all 4 reviewers
+  - Wave 8: Commit with GitHub issue lifecycle management (comment + auto-close)
+  - 10 agent definitions (3 modified, 7 new), 2 new reference files
+
 ## [0.3.1] - 2026-04-12
 
 ### Changed
