@@ -118,6 +118,8 @@ Read `agents/test-writer.md` and pass:
 - **ROOT_CAUSE**: Root cause from analysis
 - **AFFECTED_FILES**: Files involved in the bug
 - **EXPECTED_FAILURE**: How the test should fail
+- **PROJECT_ROOT**: Path to the project
+- **ALLOWED_FILES**: Test files the agent may create/modify
 
 The Test-Writer writes a minimal reproduction test and runs it.
 
@@ -133,6 +135,7 @@ The Test-Writer writes a minimal reproduction test and runs it.
 
 Start a **code-changing Coder agent** to implement the fix.
 Read `agents/coder.md` and pass:
+- **PROJECT_ROOT**: Path to the project
 - **Fix Plan**: From the Planner
 - **Root Cause**: From the analysis
 - **Affected Files**: From the analysis
@@ -156,13 +159,17 @@ Initialize active reviewers: `active = [logic, security, quality, architecture]`
 
 **Loop start (while iteration < 5 and active is not empty):**
 
-1. Start all **active reviewer agents in parallel** (Explore mode).
+1. Detect the default branch: `gh repo view --json defaultBranchRef -q '.defaultBranchRef.name'`
+   (fallback: `main`)
+
+   Start all **active reviewer agents in parallel** (Explore mode).
    For each reviewer, read the corresponding agent file from `agents/` and pass:
    - **PROJECT_ROOT**: Path to the project
    - **CHANGED_FILES**: All files changed on the fix branch
    - **ISSUE_SUMMARY**: Original issue description
-   - **FIX_DESCRIPTION**: What the fix does
+   - **FIX_SUMMARY**: What the fix does
    - **BRANCH**: The fix branch name
+   - **BASE_BRANCH**: The detected default branch name
 
    Reviewer agents:
    - `agents/logic-reviewer.md` → Logic Reviewer
@@ -184,6 +191,7 @@ Initialize active reviewers: `active = [logic, security, quality, architecture]`
    - Group findings by file path
    - Start **Fixer agents in parallel** (one per file group, code-changing mode)
    - For each Fixer, read `agents/fixer.md` and pass:
+     - **PROJECT_ROOT**: Path to the project
      - **FILE_LIST**: Only the files in this group
      - **FINDINGS**: The findings for these files
    - Wait for all Fixers to complete
@@ -216,6 +224,8 @@ Read `agents/test-writer.md` and pass:
 - **AFFECTED_FILES**: Files involved in the fix
 - **FIX_SUMMARY**: What the Coder changed
 - **REVIEW_CONTEXT**: Key findings from the review loop (if any)
+- **PROJECT_ROOT**: Path to the project
+- **ALLOWED_FILES**: Test files the agent may create/modify
 
 The Test-Writer writes regression and edge-case tests, then runs the
 full test suite.
@@ -227,13 +237,14 @@ If still failing → STOP, report to user.
 
 Start **all 4 reviewer agents in parallel** (same as Wave 5, Round 1)
 for a final review of the complete state: all code changes AND all tests.
+Ensure `CHANGED_FILES` includes all files changed on the branch, including test files added in Wave 3 and Wave 6.
 
 **Evaluate the result:**
 
 | Result | Action |
 |--------|--------|
 | No findings from any reviewer | Continue → Wave 8 (commit mode) |
-| Findings exist | `iteration += 1`, feed findings back into Wave 5 loop. If iteration budget exhausted (>= 5 total across Wave 5 + 7) → Wave 8 (report mode) |
+| Findings exist | `iteration += 1`. Reset `active` to all 4 reviewers. Re-enter Wave 5 at step 5 (Fixer agents resolve the acceptance findings), then continue the loop from step 6. If iteration budget exhausted (>= 5 total across Wave 5 + 7) → Wave 8 (report mode) |
 
 ### Wave 8: COMMIT or REPORT
 

@@ -4,6 +4,7 @@ You receive a fix plan and implement the changes.
 
 ## Input
 
+- **PROJECT_ROOT**: Path to the project directory
 - **Fix Plan**: Ordered list of necessary changes (from Planner Agent)
 - **Root Cause**: Description of the cause
 - **Affected Files**: List with paths and line numbers

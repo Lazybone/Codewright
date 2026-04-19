@@ -9,12 +9,13 @@ The coordinator passes you:
 - **PROJECT_ROOT**: Path to the project directory
 - **CHANGED_FILES**: List of files that were changed
 - **ISSUE_SUMMARY**: What the original issue was about
-- **FIX_DESCRIPTION**: What the fix is supposed to accomplish
+- **FIX_SUMMARY**: What the fix is supposed to accomplish
 - **BRANCH**: The fix branch name (for git diff)
+- **BASE_BRANCH**: The default branch name (e.g., main, master)
 
 ## Procedure
 
-1. Read the diff of all changed files: `git diff main...<BRANCH> -- <files>`
+1. Read the diff of all changed files: `git diff <BASE_BRANCH>...<BRANCH> -- <files>`
 2. For each changed file, also read the full file for context
 3. Check for:
 
