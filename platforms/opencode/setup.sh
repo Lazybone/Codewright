@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # Codewright OpenCode Plugin — Setup Script
 #
-# Installs Codewright agents and skills into the project's .opencode/ directory,
-# and adds the plugin to opencode.json so OpenCode loads it at startup.
+# Installs Codewright agents and skills globally to ~/.config/opencode/
+# so they are available in all OpenCode projects.
 #
 # The cw_agent tool is registered by the plugin itself (not as a standalone file),
 # because OpenCode's ToolContext doesn't expose the SDK client.
 #
 # Usage:
-#   bash setup.sh                  # Install to current project
-#   bash setup.sh --global         # Install to ~/.config/opencode/
-#   bash setup.sh --uninstall      # Remove Codewright from current project
+#   bash setup.sh                  # Install globally (default)
+#   bash setup.sh --local          # Install to current project's .opencode/
+#   bash setup.sh --uninstall      # Remove Codewright globally
 
 set -euo pipefail
 
@@ -27,20 +27,21 @@ usage() {
 Usage: $(basename "$0") [OPTIONS]
 
 Options:
-  --global      Install to ~/.config/opencode/ (all projects)
-  --uninstall   Remove Codewright files from target directory
+  --local       Install to .opencode/ in the current directory (project-only)
+  --uninstall   Remove Codewright (globally by default, or --local)
   --help        Show this help
 
-Without flags, installs to .opencode/ in the current directory.
+Without flags, installs globally to ~/.config/opencode/ (all projects).
 EOF
   exit 0
 }
 
-TARGET_DIR=".opencode"
+TARGET_DIR="$GLOBAL_DIR"
 UNINSTALL=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
+    --local)     TARGET_DIR=".opencode"; shift ;;
     --global)    TARGET_DIR="$GLOBAL_DIR"; shift ;;
     --uninstall) UNINSTALL=true; shift ;;
     --help)      usage ;;
@@ -55,9 +56,15 @@ if $UNINSTALL; then
   rm -f  "$TARGET_DIR/agents/cw-explore.md"
   rm -f  "$TARGET_DIR/agents/cw-worker.md"
   rm -rf "$TARGET_DIR/skills/pr-reviewer"
-  ok "Codewright removed."
-  echo ""
-  warn "Remember to also remove '@codewright/opencode' from opencode.json plugin list."
+  ok "Codewright files removed from $TARGET_DIR"
+
+  # Check global opencode.json for plugin reference
+  GLOBAL_CONFIG="$GLOBAL_DIR/opencode.json"
+  if [[ -f "$GLOBAL_CONFIG" ]] && grep -q "codewright" "$GLOBAL_CONFIG" 2>/dev/null; then
+    warn "Remove '@codewright/opencode' from $GLOBAL_CONFIG plugin list."
+  fi
+
+  ok "Uninstall complete."
   exit 0
 fi
 
@@ -65,7 +72,7 @@ fi
 
 info "Installing Codewright to $TARGET_DIR ..."
 
-# Agents (predefined subagents for cw_agent tool)
+# Agents
 mkdir -p "$TARGET_DIR/agents"
 cp "$SCRIPT_DIR/agents/cw-explore.md" "$TARGET_DIR/agents/"
 cp "$SCRIPT_DIR/agents/cw-worker.md"  "$TARGET_DIR/agents/"
@@ -77,17 +84,23 @@ cp "$SCRIPT_DIR/skills/pr-reviewer/SKILL.md" "$TARGET_DIR/skills/pr-reviewer/"
 cp "$SCRIPT_DIR/skills/pr-reviewer/agents/"*.md "$TARGET_DIR/skills/pr-reviewer/agents/"
 ok "Skill installed (pr-reviewer)"
 
-# Plugin registration hint
-if [[ -f "opencode.json" ]]; then
-  if grep -q "codewright" opencode.json 2>/dev/null; then
-    ok "Plugin already referenced in opencode.json"
+# Plugin registration in global config
+GLOBAL_CONFIG="$GLOBAL_DIR/opencode.json"
+if [[ -f "$GLOBAL_CONFIG" ]]; then
+  if grep -q "codewright" "$GLOBAL_CONFIG" 2>/dev/null; then
+    ok "Plugin already registered in $GLOBAL_CONFIG"
   else
-    warn "Add the plugin to opencode.json manually:"
-    echo '  { "plugin": ["@codewright/opencode"] }'
+    warn "Add '@codewright/opencode' to the plugin array in $GLOBAL_CONFIG"
   fi
 else
-  warn "No opencode.json found. Create one with:"
-  echo '  { "plugin": ["@codewright/opencode"] }'
+  mkdir -p "$GLOBAL_DIR"
+  cat > "$GLOBAL_CONFIG" << 'OPENCODE_JSON'
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@codewright/opencode"]
+}
+OPENCODE_JSON
+  ok "Created $GLOBAL_CONFIG with Codewright plugin"
 fi
 
 # Verify
@@ -114,12 +127,9 @@ else
 fi
 
 echo ""
-info "Architecture:"
-echo "  - Agents (cw-explore, cw-worker) → .opencode/agents/"
-echo "  - Skills (pr-reviewer)           → .opencode/skills/"
-echo "  - cw_agent tool                  → registered by plugin at startup"
+info "Installed to: $TARGET_DIR"
+echo "  - Agents: cw-explore, cw-worker"
+echo "  - Skills: pr-reviewer"
+echo "  - Tool:   cw_agent (registered by plugin at startup)"
 echo ""
-info "Next steps:"
-echo "  1. Add '@codewright/opencode' to opencode.json plugins"
-echo "  2. Start OpenCode in your project"
-echo "  3. Say: 'review my PR' or 'review PR #123'"
+info "Say 'review my PR' or 'review PR #123' in any OpenCode session."

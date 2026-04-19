@@ -9,7 +9,12 @@ Install and configure Codewright for OpenCode by following the instructions here
 https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md
 ```
 
-Or install manually — see "Manual Installation" below.
+To uninstall, paste this:
+
+```
+Uninstall Codewright for OpenCode by following the instructions here:
+https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md#uninstall
+```
 
 ## For LLM Agents
 
@@ -23,6 +28,8 @@ Or install manually — see "Manual Installation" below.
 You are helping the user install **Codewright**, a multi-agent skill plugin for OpenCode.
 Codewright provides skills like `pr-reviewer`, `auto-dev`, `github-issue-fixer`, and more.
 
+**Always install globally** to `~/.config/opencode/` so the skills are available in every project.
+
 Follow these steps exactly.
 
 ---
@@ -35,7 +42,6 @@ if command -v opencode &> /dev/null; then
 else
     echo "✗ OpenCode is not installed."
     echo "Install it first: https://opencode.ai/docs"
-    exit 1
 fi
 ```
 
@@ -43,198 +49,193 @@ If OpenCode is not installed, stop and help the user install it from https://ope
 
 ---
 
-### Step 2: Detect project directory
-
-Determine where to install. Codewright should be installed into the user's current project.
+### Step 2: Download Codewright
 
 ```bash
-if git rev-parse --show-toplevel &> /dev/null; then
-    PROJECT_ROOT="$(git rev-parse --show-toplevel)"
-    echo "✓ Git project found: $PROJECT_ROOT"
-else
-    PROJECT_ROOT="$(pwd)"
-    echo "⚠ No git repo found, using current directory: $PROJECT_ROOT"
-fi
+CW_TMP="$(mktemp -d)"
+git clone --depth 1 --filter=blob:none --sparse \
+    https://github.com/Lazybone/Codewright.git "$CW_TMP/codewright"
+cd "$CW_TMP/codewright"
+git sparse-checkout set platforms/opencode
+echo "✓ Codewright downloaded"
 ```
 
 ---
 
-### Step 3: Download and run setup
-
-Clone the Codewright repository (or use a cached copy) and run the setup script.
+### Step 3: Run global setup
 
 ```bash
-# Download setup files to a temp directory
-TMPDIR="$(mktemp -d)"
-git clone --depth 1 --filter=blob:none --sparse \
-    https://github.com/Lazybone/Codewright.git "$TMPDIR/codewright"
-cd "$TMPDIR/codewright"
-git sparse-checkout set platforms/opencode
-
-# Run setup in the project directory
-cd "$PROJECT_ROOT"
-bash "$TMPDIR/codewright/platforms/opencode/setup.sh"
-
-# Clean up
-rm -rf "$TMPDIR/codewright"
+bash "$CW_TMP/codewright/platforms/opencode/setup.sh"
 ```
+
+This installs to `~/.config/opencode/` by default (global, all projects).
 
 **Expected output:**
 ```
-[codewright] Installing Codewright to .opencode ...
+[codewright] Installing Codewright to /home/user/.config/opencode ...
 [codewright] Agents installed (cw-explore, cw-worker)
 [codewright] Skill installed (pr-reviewer)
+[codewright] Created ~/.config/opencode/opencode.json with Codewright plugin
 [codewright] Installation complete. All files verified.
 ```
 
 ---
 
-### Step 4: Install the plugin package
-
-The `cw_agent` tool is registered by the Codewright plugin at startup. Install the npm package:
+### Step 4: Clean up temp files
 
 ```bash
-cd "$PROJECT_ROOT"
-
-# Create .opencode directory if it doesn't exist
-mkdir -p .opencode
-
-# Add package.json for plugin dependency (if not exists)
-if [ ! -f .opencode/package.json ]; then
-    echo '{ "dependencies": { "@codewright/opencode": "latest" } }' > .opencode/package.json
-fi
-
-# Install (OpenCode uses bun internally)
-cd .opencode && bun install && cd ..
-```
-
-> **Note:** If `@codewright/opencode` is not yet published on npm, skip this step.
-> The plugin will work from the local setup alone once published.
-
----
-
-### Step 5: Register plugin in opencode.json
-
-Add Codewright to the project's OpenCode configuration.
-
-```bash
-cd "$PROJECT_ROOT"
-
-if [ -f opencode.json ]; then
-    # Check if already registered
-    if grep -q "codewright" opencode.json 2>/dev/null; then
-        echo "✓ Codewright already registered in opencode.json"
-    else
-        echo "⚠ Add '@codewright/opencode' to the plugin array in opencode.json"
-        echo "  Example: { \"plugin\": [\"@codewright/opencode\"] }"
-    fi
-else
-    # Create opencode.json with Codewright plugin
-    cat > opencode.json << 'OPENCODE_JSON'
-{
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@codewright/opencode"]
-}
-OPENCODE_JSON
-    echo "✓ Created opencode.json with Codewright plugin"
-fi
+rm -rf "$CW_TMP"
+echo "✓ Temp files cleaned up"
 ```
 
 ---
 
-### Step 6: Verify installation
-
-Run these checks to confirm everything is in place:
+### Step 5: Verify installation
 
 ```bash
-cd "$PROJECT_ROOT"
+GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 
 echo "=== Verification ==="
 
-# Check agents
 for agent in cw-explore cw-worker; do
-    if [ -f ".opencode/agents/$agent.md" ]; then
+    if [ -f "$GLOBAL_DIR/agents/$agent.md" ]; then
         echo "✓ Agent: $agent"
     else
         echo "✗ Missing agent: $agent"
     fi
 done
 
-# Check skills
-for skill in pr-reviewer; do
-    if [ -f ".opencode/skills/$skill/SKILL.md" ]; then
-        echo "✓ Skill: $skill"
-    else
-        echo "✗ Missing skill: $skill"
-    fi
-done
+if [ -f "$GLOBAL_DIR/skills/pr-reviewer/SKILL.md" ]; then
+    echo "✓ Skill: pr-reviewer"
+else
+    echo "✗ Missing skill: pr-reviewer"
+fi
 
-# Check config
-if [ -f "opencode.json" ] && grep -q "codewright" opencode.json; then
+if [ -f "$GLOBAL_DIR/opencode.json" ] && grep -q "codewright" "$GLOBAL_DIR/opencode.json"; then
     echo "✓ Plugin registered in opencode.json"
 else
-    echo "✗ Plugin not registered in opencode.json"
+    echo "✗ Plugin not registered"
 fi
 
 echo ""
-echo "=== Installation complete ==="
-echo "Available skills: pr-reviewer"
-echo "Try: 'review my PR' or 'review PR #123'"
+echo "=== Done ==="
 ```
 
 ---
 
-### Step 7: Confirm to user
+### Step 6: Confirm to user
 
 Tell the user:
 
-1. **What was installed:**
+1. **What was installed** (globally to `~/.config/opencode/`, available in all projects):
    - `cw-explore` agent (read-only analysis)
    - `cw-worker` agent (code modifications)
    - `pr-reviewer` skill (3-agent parallel PR review)
    - `cw_agent` tool (registered by plugin at startup)
 
 2. **How to use it:**
-   - Say "review my PR" or "review PR #123" to trigger the `pr-reviewer` skill
-   - The skill spawns 3 parallel agents (Logic, Security, Quality) and consolidates findings
+   - Say "review my PR" or "review PR #123" in any OpenCode session
 
-3. **What's coming next:**
-   - `auto-dev` — autonomous development with review loops
-   - `github-issue-fixer` — 8-wave bug fix pipeline
-   - `codebase-doctor` — analyze + auto-fix + verify
-   - And 6 more skills
+3. **How to uninstall:**
+   - Paste the uninstall prompt from the top of this file, or run `bash setup.sh --uninstall`
+
+4. **What's coming next:**
+   - `auto-dev`, `github-issue-fixer`, `codebase-doctor`, and 6 more skills
+
+---
+
+## Uninstall
+
+### For Humans
+
+Paste this prompt into your OpenCode session:
+
+```
+Uninstall Codewright for OpenCode by following the instructions here:
+https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md#uninstall
+```
+
+### For LLM Agents
+
+You are helping the user **uninstall Codewright** from OpenCode.
+
+Follow these steps exactly.
+
+#### Step 1: Remove Codewright files
+
+```bash
+GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+
+rm -f  "$GLOBAL_DIR/agents/cw-explore.md"
+rm -f  "$GLOBAL_DIR/agents/cw-worker.md"
+rm -rf "$GLOBAL_DIR/skills/pr-reviewer"
+
+echo "✓ Codewright agents and skills removed"
+```
+
+#### Step 2: Remove plugin from opencode.json
+
+Read `~/.config/opencode/opencode.json` and remove `"@codewright/opencode"` from the `plugin` array.
+
+If `@codewright/opencode` is the only plugin, you can remove the entire `plugin` key or leave it as an empty array.
+
+Do **not** delete `opencode.json` itself — the user may have other configuration in it.
+
+#### Step 3: Verify removal
+
+```bash
+GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+
+REMAINING=0
+for f in "$GLOBAL_DIR/agents/cw-explore.md" "$GLOBAL_DIR/agents/cw-worker.md" "$GLOBAL_DIR/skills/pr-reviewer/SKILL.md"; do
+    if [ -f "$f" ]; then
+        echo "✗ Still exists: $f"
+        REMAINING=$((REMAINING + 1))
+    fi
+done
+
+if [ $REMAINING -eq 0 ]; then
+    echo "✓ Codewright fully removed"
+else
+    echo "✗ $REMAINING file(s) still present"
+fi
+
+if grep -q "codewright" "$GLOBAL_DIR/opencode.json" 2>/dev/null; then
+    echo "✗ Plugin still referenced in opencode.json"
+else
+    echo "✓ Plugin removed from opencode.json"
+fi
+```
+
+#### Step 4: Confirm to user
+
+Tell the user that Codewright has been completely removed. The `cw_agent` tool, `cw-explore`/`cw-worker` agents, and `pr-reviewer` skill are no longer available. No restart needed — the changes take effect on the next OpenCode session.
 
 ---
 
 ## Manual Installation
 
-If you prefer to install without an LLM agent:
-
 ```bash
-# Clone and run setup
 git clone https://github.com/Lazybone/Codewright.git /tmp/codewright
-cd /your/project
 bash /tmp/codewright/platforms/opencode/setup.sh
-
-# Add to opencode.json
-echo '{ "plugin": ["@codewright/opencode"] }' > opencode.json
-
-# Clean up
 rm -rf /tmp/codewright
 ```
 
-## Uninstallation
+## Manual Uninstallation
 
 ```bash
-bash .opencode/setup.sh --uninstall  # or re-download and run setup.sh --uninstall
-# Remove from opencode.json plugin array
+GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+rm -f  "$GLOBAL_DIR/agents/cw-explore.md"
+rm -f  "$GLOBAL_DIR/agents/cw-worker.md"
+rm -rf "$GLOBAL_DIR/skills/pr-reviewer"
+# Edit $GLOBAL_DIR/opencode.json and remove "@codewright/opencode" from the plugin array
 ```
 
 ## Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| `cw_agent` tool not found | Ensure `@codewright/opencode` is in the `plugin` array of `opencode.json` |
-| Skill not discovered | Check that `.opencode/skills/pr-reviewer/SKILL.md` exists |
-| Agent not found | Check that `.opencode/agents/cw-explore.md` and `cw-worker.md` exist |
-| Plugin not loading | Run `opencode` and check startup logs for `[codewright] Plugin loaded` |
+| `cw_agent` tool not found | Ensure `@codewright/opencode` is in the `plugin` array of `~/.config/opencode/opencode.json` |
+| Skill not discovered | Check that `~/.config/opencode/skills/pr-reviewer/SKILL.md` exists |
+| Agent not found | Check that `~/.config/opencode/agents/cw-explore.md` and `cw-worker.md` exist |
+| Plugin not loading | Start OpenCode and check logs for `[codewright] Plugin loaded` |

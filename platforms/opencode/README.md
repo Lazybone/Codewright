@@ -13,7 +13,9 @@ Install and configure Codewright for OpenCode by following the instructions here
 https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md
 ```
 
-Or read the [Installation Guide](INSTALL.md) manually.
+Installs globally to `~/.config/opencode/` — available in all projects.
+
+Or install manually: [Installation Guide](INSTALL.md)
 
 ## What You Get
 
@@ -73,10 +75,14 @@ bun test            # 25 unit + integration tests
 
 ## Uninstallation
 
-```bash
-bash setup.sh --uninstall
-# Also remove '@codewright/opencode' from opencode.json
+Paste this into your OpenCode session:
+
 ```
+Uninstall Codewright for OpenCode by following the instructions here:
+https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md#uninstall
+```
+
+Or manually: [Uninstall Guide](INSTALL.md#uninstall)
 
 ## License
 
