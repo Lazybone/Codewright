@@ -1,20 +1,21 @@
 ---
 name: fix-github-issue
 description: >
-  Analyzes a GitHub issue, reproduces the bug, creates a fix plan, implements the fix,
-  verifies the solution and commits the result. Use this skill when the user wants to
-  fix a GitHub issue, mentions an issue URL or issue number, or says "fix issue",
-  "resolve issue", "look at issue #X", "fix this bug", "resolve this error" with an
-  issue reference. Works with sub-agent teams for parallel analysis and verification.
-  Can use MCP Google DevTools for browser-based verification.
-  Also triggers on German: "behebe issue", "löse das issue", "schau dir issue #X an",
-  "bug fixen", "diesen Fehler beheben".
+  Analyzes a GitHub issue, validates it with dual-agent verification,
+  writes a reproduction test (TDD), implements the fix, runs iterative
+  multi-reviewer code review (Logic, Security, Quality, Architecture),
+  hardens with regression tests, and commits with issue lifecycle management.
+  Use this skill when the user wants to fix a GitHub issue, mentions an issue
+  URL or issue number, or says "fix issue", "resolve issue", "look at issue #X",
+  "fix this bug", "resolve this error" with an issue reference.
+  Also triggers on German: "behebe issue", "löse das issue",
+  "schau dir issue #X an", "bug fixen", "diesen Fehler beheben".
 ---
 
-# GitHub Issue Fixer — Agent-Based Workflow
+# GitHub Issue Fixer — Wave-Based Workflow
 
-This skill fixes GitHub issues systematically in a multi-step process
-using specialized sub-agents. Each agent has a clearly defined role.
+This skill fixes GitHub issues systematically using an 8-wave architecture
+with TDD core, multi-reviewer verification, and GitHub issue lifecycle management.
 
 ## Prerequisites
 
@@ -22,28 +23,25 @@ using specialized sub-agents. Each agent has a clearly defined role.
 - GitHub CLI (`gh`) installed and authenticated
 - Optional: MCP Google DevTools for browser-based verification
 
-## Workflow Overview
+## Wave Architecture Overview
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  1. ANALYZE │────▶│  2. PLAN     │────▶│  3. FIX     │
-│  (Explore)  │     │  (Plan)      │     │  (Code)     │
-└─────────────┘     └──────────────┘     └─────────────┘
-                                               │
-                    ┌──────────────┐            │
-                    │  5. COMMIT   │◀───────────│
-                    │  (main)      │     ┌─────────────┐
-                    └──────────────┘     │  4. VERIFY  │
-                          ▲              │  (Test)     │
-                          │              └─────────────┘
-                          │                    │
-                          └────────────────────┘
-                               (if OK)
+Wave 1: VALIDATE    ── Analyzer + Validator (parallel)
+Wave 2: PLAN        ── Planner (fix plan + test strategy)
+       BRANCH       ── Create fix/issue-<N> branch
+Wave 3: TEST-FIRST  ── Test-Writer: reproduction test (must FAIL)
+Wave 4: FIX         ── Coder: implement fix (reproduction test must PASS)
+Wave 5: REVIEW-FIX  ── 4 Reviewers parallel → Fixers → Loop (max 5)
+Wave 6: HARDEN      ── Test-Writer: regression + edge-case tests
+Wave 7: ACCEPTANCE  ── 4 Reviewers (final review of code + tests)
+Wave 8: COMMIT      ── Commit + issue comment + close (or report)
 ```
+
+Iteration budget: Wave 5 and Wave 7 share a maximum of **5 iterations** total.
 
 ## Step-by-Step Process
 
-### Phase 1: Load & Analyze Issue
+### Wave 1: VALIDATE
 
 Load the issue via the GitHub CLI:
 
@@ -51,101 +49,240 @@ Load the issue via the GitHub CLI:
 gh issue view <ISSUE_NUMBER> --json title,body,labels,comments,assignees
 ```
 
-Then start an **Explore sub-agent** for codebase analysis.
-Start the agent according to `../../references/agent-invocation.md`.
-Read the instructions in `agents/analyzer.md` and pass to the agent:
+Start **two Explore sub-agents in parallel** for independent validation.
+Start agents according to `../../references/agent-invocation.md`.
 
-- The complete issue text (title, body, comments)
+**Agent 1: Analyzer**
+Read `agents/analyzer.md` and pass:
+- The complete issue text (title, body, comments, labels)
 - The task of finding relevant files and locating the bug
-- The request to reproduce the bug (run tests, check logs)
 
-The Analyzer returns:
-- Affected files and code locations
-- Reproduction status (bug confirmed yes/no)
-- Root cause analysis
+**Agent 2: Validator**
+Read `agents/validator.md` and pass:
+- The complete issue text (title, body, comments, labels)
+- Do NOT pass the Analyzer's results — the Validator must assess independently
 
-**If the bug is no longer reproducible**: Report this to the user and ask
-whether the issue should be closed. End the workflow.
+Wait for both agents to complete, then evaluate their verdicts:
 
-### Phase 2: Create Fix Plan
+| Analyzer | Validator | Action |
+|----------|-----------|--------|
+| CONFIRMED | CONFIRMED | Continue → Wave 2 (consolidated analysis from both) |
+| CONFIRMED | NOT_CONFIRMED | Continue → Wave 2 (Analyzer analysis as basis, Validator doubts documented as risk context) |
+| NOT_CONFIRMED | CONFIRMED | Continue → Wave 2 (Validator analysis as basis, Analyzer doubts documented as risk context) |
+| NOT_CONFIRMED | NOT_CONFIRMED | **User-Gate** → ask user to confirm. If confirmed: comment on issue + close → STOP |
 
-Start a **Plan sub-agent** with the results from Phase 1.
-Start the agent according to `../../references/agent-invocation.md`.
+**If stopping (both NOT_CONFIRMED):**
+1. Show the user both agents' assessments
+2. Ask: "Both analysis agents could not confirm this issue. Should I comment on the issue and close it?"
+3. If user agrees: Post comment using template from `references/issue-comments.md` (Issue Invalidated), then close:
+   ```bash
+   gh issue comment <NUMBER> --body "<COMMENT>"
+   gh issue close <NUMBER> --reason "not planned"
+   ```
+4. End the workflow
+
+### Wave 2: PLAN
+
+Start a **Plan sub-agent** with the consolidated validation results.
 Read `agents/planner.md` and pass:
-
-- The analysis results (affected files, root cause)
+- The analysis results (affected files, root cause) from the confirming agent(s)
 - The original issue text
+- Any dissenting assessment as risk context
 
 The Planner returns:
 - Ordered list of necessary changes
 - Risk assessment per change
-- Suggested test strategy
+- Comprehensive test strategy (reproduction test + regression tests)
+- Overall risk assessment
 
-Present the plan to the user and wait for confirmation before proceeding.
+**User-Gate:** Present the plan to the user and wait for confirmation
+before proceeding.
 
-### Phase 3: Implement Fix
+### Branch Creation
 
-Implement the changes according to the plan. Work in the main agent:
+After the user approves the plan, create the feature branch:
 
-1. Create a feature branch: `git checkout -b fix/issue-<NUMBER>`
-2. Execute the planned changes file by file
-3. Stick closely to the plan — inform the user of any deviations
-4. Follow existing code conventions (linting, formatting)
-5. Write or update tests for the fix
-
-### Phase 4: Verification
-
-Start verification via two parallel paths:
-
-**4a. Automated Tests** — Run the test suite:
 ```bash
-# Detect the test framework automatically
-# npm test / pytest / cargo test / go test / etc.
+git checkout -b fix/issue-<NUMBER>
 ```
 
-**4b. Browser Verification (for UI bugs)** — If the issue involves
-a visual or frontend problem, use MCP Google DevTools:
+All code-changing agents from this point work on this branch.
 
-Read `references/devtools-verification.md` for the exact procedure.
+### Wave 3: TEST-FIRST
 
-Check after verification:
-- All existing tests still pass (no regressions)
-- The specific bug is fixed
-- No new linting errors or warnings
+Start a **code-changing Test-Writer agent** in reproduction mode.
+Read `agents/test-writer.md` and pass:
+- **MODE**: `reproduction`
+- **TEST_PLAN**: The test strategy from the Planner
+- **ISSUE_SUMMARY**: Issue description
+- **ROOT_CAUSE**: Root cause from analysis
+- **AFFECTED_FILES**: Files involved in the bug
+- **EXPECTED_FAILURE**: How the test should fail
 
-**If verification fails**: Analyze the errors, adjust the fix,
-and repeat Phase 4. Maximum 3 iterations, then involve the user.
+The Test-Writer writes a minimal reproduction test and runs it.
 
-### Phase 5: Commit & Wrap-up
+**Evaluate the result:**
 
-Once all verifications have passed:
+| Test Result | Action |
+|-------------|--------|
+| **Test FAILS** | Bug confirmed via test. Continue → Wave 4 |
+| **Test PASSES** | Bug may already be fixed. **User-Gate**: "The reproduction test passes immediately. The bug appears to be already fixed. Should I comment on the issue and close it?" If yes: use Issue Invalidated template → close → STOP |
+| **Test won't compile** | Test-Writer retries (max 3 attempts). If still broken → STOP, report to user |
 
-1. Stage the changes: `git add -A`
-2. Create a meaningful commit:
+### Wave 4: FIX
+
+Start a **code-changing Coder agent** to implement the fix.
+Read `agents/coder.md` and pass:
+- **Fix Plan**: From the Planner
+- **Root Cause**: From the analysis
+- **Affected Files**: From the analysis
+- **Issue Number**: For reference
+- **Reproduction Test**: Path and name of the failing test
+
+The Coder implements the fix and runs the reproduction test.
+
+**Evaluate the result:**
+
+| Result | Action |
+|--------|--------|
+| Reproduction test PASSES + full suite PASSES | Continue → Wave 5 |
+| Reproduction test FAILS | Coder retries (max 3 attempts). If still red → STOP, report to user with diagnostics |
+| Full suite has regressions | Coder fixes regressions (within the 3-attempt budget) |
+
+### Wave 5: REVIEW-FIX LOOP
+
+Initialize iteration counter: `iteration = 0`
+Initialize active reviewers: `active = [logic, security, quality, architecture]`
+
+**Loop start (while iteration < 5 and active is not empty):**
+
+1. Start all **active reviewer agents in parallel** (Explore mode).
+   For each reviewer, read the corresponding agent file from `agents/` and pass:
+   - **PROJECT_ROOT**: Path to the project
+   - **CHANGED_FILES**: All files changed on the fix branch
+   - **ISSUE_SUMMARY**: Original issue description
+   - **FIX_DESCRIPTION**: What the fix does
+   - **BRANCH**: The fix branch name
+
+   Reviewer agents:
+   - `agents/logic-reviewer.md` → Logic Reviewer
+   - `agents/security-reviewer.md` → Security Reviewer
+   - `agents/quality-reviewer.md` → Quality Reviewer
+   - `agents/architecture-reviewer.md` → Architecture Reviewer
+
+2. Wait for all active reviewers to complete.
+
+3. **Consolidate findings:**
+   - Collect all findings from all reviewers
+   - Deduplicate: findings targeting the same file + line range + problem
+     are merged (highest severity wins, both recommendations preserved)
+   - See `references/finding-format.md` for consolidation rules
+
+4. **If no findings:** Exit loop → Continue to Wave 6
+
+5. **If findings exist:**
+   - Group findings by file path
+   - Start **Fixer agents in parallel** (one per file group, code-changing mode)
+   - For each Fixer, read `agents/fixer.md` and pass:
+     - **FILE_LIST**: Only the files in this group
+     - **FINDINGS**: The findings for these files
+   - Wait for all Fixers to complete
+
+6. **Run the full test suite** to verify no regressions from fixes:
+   ```bash
+   # Use the project's test runner
+   # All tests must pass
    ```
-   fix: <short description> (closes #<NUMBER>)
+   If tests fail: the failing tests become additional findings for the next round
 
-   <What was changed and why>
+7. **Update active reviewers:**
+   - `active` = only the reviewers that produced findings in this round
+   - Reviewers that reported "No findings" are excluded from the next round
 
-   Fixes #<NUMBER>
-   ```
-3. Show the user a summary:
+8. `iteration += 1`
+
+**Loop end**
+
+If the loop exits because `iteration >= 5` with remaining findings:
+→ Skip to Wave 8 (report mode — no commit)
+
+### Wave 6: HARDEN
+
+Start a **code-changing Test-Writer agent** in hardening mode.
+Read `agents/test-writer.md` and pass:
+- **MODE**: `hardening`
+- **TEST_PLAN**: The test strategy from the Planner
+- **ISSUE_SUMMARY**: Issue description
+- **AFFECTED_FILES**: Files involved in the fix
+- **FIX_SUMMARY**: What the Coder changed
+- **REVIEW_CONTEXT**: Key findings from the review loop (if any)
+
+The Test-Writer writes regression and edge-case tests, then runs the
+full test suite.
+
+**If tests fail:** Test-Writer fixes the tests (max 3 attempts).
+If still failing → STOP, report to user.
+
+### Wave 7: ACCEPTANCE
+
+Start **all 4 reviewer agents in parallel** (same as Wave 5, Round 1)
+for a final review of the complete state: all code changes AND all tests.
+
+**Evaluate the result:**
+
+| Result | Action |
+|--------|--------|
+| No findings from any reviewer | Continue → Wave 8 (commit mode) |
+| Findings exist | `iteration += 1`, feed findings back into Wave 5 loop. If iteration budget exhausted (>= 5 total across Wave 5 + 7) → Wave 8 (report mode) |
+
+### Wave 8: COMMIT or REPORT
+
+**If all findings are resolved (commit mode):**
+
+1. Show the user a summary:
    - Which files were changed
    - What the fix does
-   - Test results
-4. Ask whether to push and create a PR
+   - Reproduction test + hardening tests written
+   - Review results (all clean)
+2. **User-Gate:** "Fix is ready. Should I commit, comment on the issue, and close it?"
+3. If user agrees:
+   a. Post comment on the issue using the Issue Resolved template from
+      `references/issue-comments.md`
+   b. Create the commit following `references/commit-conventions.md`:
+      ```bash
+      git add <changed-files>
+      git commit -m "fix: <description> (closes #<NUMBER>)
+
+      <Root cause and fix explanation>
+
+      Fixes #<NUMBER>"
+      ```
+   c. Ask whether to push and create a PR
+
+**If open findings remain (report mode):**
+
+1. Present a detailed report to the user:
+   - All remaining findings with severity, file, and description
+   - Which review rounds were completed
+   - What was fixed vs what remains open
+   - The current state of the code on the branch
+2. Do NOT commit. Do NOT comment on the issue. Do NOT close the issue.
+3. The user decides how to proceed.
 
 ## Error Handling
 
-- If `gh` is not installed: Try to fetch the issue info via the GitHub API
-  using `curl`, or ask the user to paste the issue description.
+- If `gh` is not installed: Try `curl` with the GitHub API, or ask the
+  user to paste the issue description.
 - If tests are not found: Ask the user for the test command.
-- If the fix cannot be verified after 3 iterations: Stop and
-  present the current state with the open problems to the user.
+- If an agent does not respond within 5 minutes: Inform the user which
+  agent is unresponsive and which area is affected. Offer to skip.
+- If the reproduction test cannot be written (no test framework detected):
+  Ask the user for the test framework and conventions.
 
 ## Notes
 
 - Always create a separate branch, never work directly on main/master.
-- Never commit without successful verification.
-- Inform the user about progress at each phase transition.
-- When in doubt: Better to ask than to guess.
+- Never commit without successful verification from all reviewers.
+- Inform the user about progress at each wave transition.
+- When in doubt: better to ask than to guess.
+- The iteration budget (max 5) is shared between Wave 5 and Wave 7.
