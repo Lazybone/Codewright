@@ -74,7 +74,8 @@ This installs to `~/.config/opencode/` by default (global, all projects).
 ```
 [codewright] Installing Codewright to /home/user/.config/opencode ...
 [codewright] Agents installed (cw-explore, cw-worker)
-[codewright] Skill installed (pr-reviewer)
+[codewright] 9 skills installed (audit-project auto-dev codebase-doctor ...)
+[codewright] Shared references installed
 [codewright] Created ~/.config/opencode/opencode.json with Codewright plugin
 [codewright] Installation complete. All files verified.
 ```
@@ -105,10 +106,18 @@ for agent in cw-explore cw-worker; do
     fi
 done
 
-if [ -f "$GLOBAL_DIR/skills/pr-reviewer/SKILL.md" ]; then
-    echo "✓ Skill: pr-reviewer"
+for skill in audit-project auto-dev codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer; do
+    if [ -f "$GLOBAL_DIR/skills/$skill/SKILL.md" ]; then
+        echo "✓ Skill: $skill"
+    else
+        echo "✗ Missing skill: $skill"
+    fi
+done
+
+if [ -d "$GLOBAL_DIR/references" ]; then
+    echo "✓ Shared references"
 else
-    echo "✗ Missing skill: pr-reviewer"
+    echo "✗ Missing references"
 fi
 
 if [ -f "$GLOBAL_DIR/opencode.json" ] && grep -q "codewright" "$GLOBAL_DIR/opencode.json"; then
@@ -128,19 +137,20 @@ echo "=== Done ==="
 Tell the user:
 
 1. **What was installed** (globally to `~/.config/opencode/`, available in all projects):
-   - `cw-explore` agent (read-only analysis)
-   - `cw-worker` agent (code modifications)
-   - `pr-reviewer` skill (3-agent parallel PR review)
+   - 2 agents: `cw-explore` (read-only analysis), `cw-worker` (code modifications)
+   - 9 skills: `audit-project`, `auto-dev`, `codebase-doctor`, `codebase-onboarding`, `github-issue-fixer`, `perf-analyzer`, `pr-reviewer`, `refactor-orchestrator`, `test-engineer`
+   - Shared references (agent-invocation, finding-format)
    - `cw_agent` tool (registered by plugin at startup)
 
 2. **How to use it:**
-   - Say "review my PR" or "review PR #123" in any OpenCode session
+   - "review my PR" or "review PR #123" — parallel PR review
+   - "auto dev: add feature X" — autonomous development
+   - "fix issue #42" — GitHub issue fixing
+   - "audit this project" — comprehensive codebase audit
+   - "onboard me" — generate architecture docs
 
 3. **How to uninstall:**
    - Paste the uninstall prompt from the top of this file, or run `bash setup.sh --uninstall`
-
-4. **What's coming next:**
-   - `auto-dev`, `github-issue-fixer`, `codebase-doctor`, and 6 more skills
 
 ---
 
@@ -166,11 +176,19 @@ Follow these steps exactly.
 ```bash
 GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 
-rm -f  "$GLOBAL_DIR/agents/cw-explore.md"
-rm -f  "$GLOBAL_DIR/agents/cw-worker.md"
-rm -rf "$GLOBAL_DIR/skills/pr-reviewer"
+# Agents
+rm -f "$GLOBAL_DIR/agents/cw-explore.md"
+rm -f "$GLOBAL_DIR/agents/cw-worker.md"
 
-echo "✓ Codewright agents and skills removed"
+# All skills
+for skill in audit-project auto-dev codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer; do
+    rm -rf "$GLOBAL_DIR/skills/$skill"
+done
+
+# Shared references
+rm -rf "$GLOBAL_DIR/references"
+
+echo "✓ Codewright agents, skills, and references removed"
 ```
 
 #### Step 2: Remove plugin from opencode.json
@@ -187,17 +205,18 @@ Do **not** delete `opencode.json` itself — the user may have other configurati
 GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 
 REMAINING=0
-for f in "$GLOBAL_DIR/agents/cw-explore.md" "$GLOBAL_DIR/agents/cw-worker.md" "$GLOBAL_DIR/skills/pr-reviewer/SKILL.md"; do
-    if [ -f "$f" ]; then
-        echo "✗ Still exists: $f"
-        REMAINING=$((REMAINING + 1))
-    fi
+for f in "$GLOBAL_DIR/agents/cw-explore.md" "$GLOBAL_DIR/agents/cw-worker.md"; do
+    [ -f "$f" ] && echo "✗ Still exists: $f" && REMAINING=$((REMAINING + 1))
 done
+for skill in audit-project auto-dev codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer; do
+    [ -d "$GLOBAL_DIR/skills/$skill" ] && echo "✗ Still exists: skills/$skill" && REMAINING=$((REMAINING + 1))
+done
+[ -d "$GLOBAL_DIR/references" ] && echo "✗ Still exists: references/" && REMAINING=$((REMAINING + 1))
 
 if [ $REMAINING -eq 0 ]; then
     echo "✓ Codewright fully removed"
 else
-    echo "✗ $REMAINING file(s) still present"
+    echo "✗ $REMAINING item(s) still present"
 fi
 
 if grep -q "codewright" "$GLOBAL_DIR/opencode.json" 2>/dev/null; then
@@ -209,7 +228,7 @@ fi
 
 #### Step 4: Confirm to user
 
-Tell the user that Codewright has been completely removed. The `cw_agent` tool, `cw-explore`/`cw-worker` agents, and `pr-reviewer` skill are no longer available. No restart needed — the changes take effect on the next OpenCode session.
+Tell the user that Codewright has been completely removed. All 9 skills, both agents, shared references, and the `cw_agent` tool are no longer available. No restart needed — the changes take effect on the next OpenCode session.
 
 ---
 
@@ -225,9 +244,12 @@ rm -rf /tmp/codewright
 
 ```bash
 GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
-rm -f  "$GLOBAL_DIR/agents/cw-explore.md"
-rm -f  "$GLOBAL_DIR/agents/cw-worker.md"
-rm -rf "$GLOBAL_DIR/skills/pr-reviewer"
+rm -f  "$GLOBAL_DIR/agents/cw-explore.md" "$GLOBAL_DIR/agents/cw-worker.md"
+rm -rf "$GLOBAL_DIR/skills/audit-project" "$GLOBAL_DIR/skills/auto-dev" \
+       "$GLOBAL_DIR/skills/codebase-doctor" "$GLOBAL_DIR/skills/codebase-onboarding" \
+       "$GLOBAL_DIR/skills/github-issue-fixer" "$GLOBAL_DIR/skills/perf-analyzer" \
+       "$GLOBAL_DIR/skills/pr-reviewer" "$GLOBAL_DIR/skills/refactor-orchestrator" \
+       "$GLOBAL_DIR/skills/test-engineer" "$GLOBAL_DIR/references"
 # Edit $GLOBAL_DIR/opencode.json and remove "@codewright/opencode" from the plugin array
 ```
 

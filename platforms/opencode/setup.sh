@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # Codewright OpenCode Plugin — Setup Script
 #
-# Installs Codewright agents and skills globally to ~/.config/opencode/
-# so they are available in all OpenCode projects.
-#
-# The cw_agent tool is registered by the plugin itself (not as a standalone file),
-# because OpenCode's ToolContext doesn't expose the SDK client.
+# Installs all Codewright agents, skills, and references globally to
+# ~/.config/opencode/ so they are available in all OpenCode projects.
 #
 # Usage:
 #   bash setup.sh                  # Install globally (default)
@@ -16,6 +13,18 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+
+SKILLS=(
+  audit-project
+  auto-dev
+  codebase-doctor
+  codebase-onboarding
+  github-issue-fixer
+  perf-analyzer
+  pr-reviewer
+  refactor-orchestrator
+  test-engineer
+)
 
 info()  { printf '\033[0;34m[codewright]\033[0m %s\n' "$1"; }
 ok()    { printf '\033[0;32m[codewright]\033[0m %s\n' "$1"; }
@@ -53,10 +62,18 @@ done
 
 if $UNINSTALL; then
   info "Removing Codewright from $TARGET_DIR ..."
-  rm -f  "$TARGET_DIR/agents/cw-explore.md"
-  rm -f  "$TARGET_DIR/agents/cw-worker.md"
-  rm -rf "$TARGET_DIR/skills/pr-reviewer"
-  ok "Codewright files removed from $TARGET_DIR"
+
+  # Agents
+  rm -f "$TARGET_DIR/agents/cw-explore.md"
+  rm -f "$TARGET_DIR/agents/cw-worker.md"
+
+  # All skills
+  for skill in "${SKILLS[@]}"; do
+    rm -rf "$TARGET_DIR/skills/$skill"
+  done
+
+  # Shared references
+  rm -rf "$TARGET_DIR/references"
 
   # Check global opencode.json for plugin reference
   GLOBAL_CONFIG="$GLOBAL_DIR/opencode.json"
@@ -64,7 +81,7 @@ if $UNINSTALL; then
     warn "Remove '@codewright/opencode' from $GLOBAL_CONFIG plugin list."
   fi
 
-  ok "Uninstall complete."
+  ok "Codewright fully removed from $TARGET_DIR"
   exit 0
 fi
 
@@ -78,11 +95,25 @@ cp "$SCRIPT_DIR/agents/cw-explore.md" "$TARGET_DIR/agents/"
 cp "$SCRIPT_DIR/agents/cw-worker.md"  "$TARGET_DIR/agents/"
 ok "Agents installed (cw-explore, cw-worker)"
 
-# Skills
-mkdir -p "$TARGET_DIR/skills/pr-reviewer/agents"
-cp "$SCRIPT_DIR/skills/pr-reviewer/SKILL.md" "$TARGET_DIR/skills/pr-reviewer/"
-cp "$SCRIPT_DIR/skills/pr-reviewer/agents/"*.md "$TARGET_DIR/skills/pr-reviewer/agents/"
-ok "Skill installed (pr-reviewer)"
+# All skills
+mkdir -p "$TARGET_DIR/skills"
+SKILL_COUNT=0
+for skill in "${SKILLS[@]}"; do
+  if [[ -d "$SCRIPT_DIR/skills/$skill" ]]; then
+    rm -rf "$TARGET_DIR/skills/$skill"
+    cp -r "$SCRIPT_DIR/skills/$skill" "$TARGET_DIR/skills/$skill"
+    SKILL_COUNT=$((SKILL_COUNT + 1))
+  else
+    warn "Skill directory not found: $skill"
+  fi
+done
+ok "$SKILL_COUNT skills installed (${SKILLS[*]})"
+
+# Shared references
+if [[ -d "$SCRIPT_DIR/references" ]]; then
+  cp -r "$SCRIPT_DIR/references" "$TARGET_DIR/references"
+  ok "Shared references installed"
+fi
 
 # Plugin registration in global config
 GLOBAL_CONFIG="$GLOBAL_DIR/opencode.json"
@@ -106,16 +137,17 @@ fi
 # Verify
 info "Verifying installation ..."
 MISSING=0
-for f in \
-  "$TARGET_DIR/agents/cw-explore.md" \
-  "$TARGET_DIR/agents/cw-worker.md" \
-  "$TARGET_DIR/skills/pr-reviewer/SKILL.md" \
-  "$TARGET_DIR/skills/pr-reviewer/agents/logic-reviewer.md" \
-  "$TARGET_DIR/skills/pr-reviewer/agents/security-reviewer.md" \
-  "$TARGET_DIR/skills/pr-reviewer/agents/quality-reviewer.md"
-do
-  if [[ ! -f "$f" ]]; then
-    warn "Missing: $f"
+
+for agent in cw-explore cw-worker; do
+  if [[ ! -f "$TARGET_DIR/agents/$agent.md" ]]; then
+    warn "Missing agent: $agent"
+    MISSING=$((MISSING + 1))
+  fi
+done
+
+for skill in "${SKILLS[@]}"; do
+  if [[ ! -f "$TARGET_DIR/skills/$skill/SKILL.md" ]]; then
+    warn "Missing skill: $skill"
     MISSING=$((MISSING + 1))
   fi
 done
@@ -128,8 +160,9 @@ fi
 
 echo ""
 info "Installed to: $TARGET_DIR"
-echo "  - Agents: cw-explore, cw-worker"
-echo "  - Skills: pr-reviewer"
-echo "  - Tool:   cw_agent (registered by plugin at startup)"
+echo "  - Agents:     cw-explore, cw-worker"
+echo "  - Skills:     ${SKILLS[*]}"
+echo "  - References: agent-invocation, finding-format"
+echo "  - Tool:       cw_agent (registered by plugin at startup)"
 echo ""
-info "Say 'review my PR' or 'review PR #123' in any OpenCode session."
+info "Say 'review my PR' or 'auto dev: add feature X' in any OpenCode session."
