@@ -5,6 +5,26 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.7] - 2026-04-19
+
+### Added
+
+- **OpenCode platform support (PoC)**: Bridge plugin `@codewright/opencode` that enables Codewright skills to run in OpenCode CLI
+  - `cw_agent` tool registered via plugin `tool` hook (SDK client closure, not standalone file — ToolContext has no client access)
+  - `cw-explore` agent — read-only analysis container (equivalent to `subagent_type: "Explore"`)
+  - `cw-worker` agent — code modification container (equivalent to `mode: "auto"`)
+  - Orchestrator using real SDK types: `session.create()`, `session.prompt()` with `Part[]` input/output, `session.delete()`
+  - `Promise.allSettled`-based parallel execution with abort signal propagation, 5-minute timeouts
+  - `extractTextFromParts()` — extracts text from SDK `Part[]` (filters `TextPart` from reasoning, tool, and other part types)
+  - `pr-reviewer` skill ported to OpenCode (3-agent parallel PR review)
+  - `setup.sh` installer for `.opencode/` directory setup (agents, skills)
+  - 25 unit + integration tests (types, formatResults, spawnAgent, spawnParallel with mock client)
+  - Plugin exports both `default` and `server` for `PluginModule` compatibility
+
+### Changed
+
+- **CLAUDE.md**: Updated repository overview to reflect multi-platform support and new `platforms/` directory structure
+
 ## [0.3.6] - 2026-04-19
 
 ### Changed

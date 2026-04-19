@@ -1,27 +1,76 @@
 # Codewright
 
-A [Claude Code](https://claude.ai/code) plugin with multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.
+Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.
+
+Works with [Claude Code](https://claude.ai/code) and [OpenCode](https://github.com/anomalyco/opencode).
 
 ## Installation
 
-In Claude Code:
+### Claude Code
 
 ```
 /plugin marketplace add Lazybone/Codewright
 /plugin install codewright@Lazybone-Codewright
 ```
 
+### OpenCode
+
+```bash
+# Install agents + skills to .opencode/
+bash platforms/opencode/setup.sh
+
+# Add plugin to opencode.json
+# { "plugin": ["@codewright/opencode"] }
+```
+
+See [platforms/opencode/README.md](platforms/opencode/README.md) for details.
+
 ## Skills
 
-### audit-project
+| Skill | Agents | Description |
+|-------|--------|-------------|
+| [auto-dev](#auto-dev) | 9 | Universal autonomous dev agent — features, bugfixes, refactoring |
+| [github-issue-fixer](#github-issue-fixer) | 10 | 8-wave bug fix pipeline with TDD and iterative review |
+| [codebase-doctor](#codebase-doctor) | 7 | Analyze → Auto-Fix → Verify in 3 waves |
+| [audit-project](#audit-project) | 5 | Parallel project audit → GitHub Issues |
+| [refactor-orchestrator](#refactor-orchestrator) | 4 | Teamleader-coordinated project refactoring |
+| [pr-reviewer](#pr-reviewer) | 3 | Multi-perspective PR review |
+| [test-engineer](#test-engineer) | 4 | Coverage analysis + test generation |
+| [codebase-onboarding](#codebase-onboarding) | 3 | Architecture docs + getting-started guides |
+| [perf-analyzer](#perf-analyzer) | 4 | Performance bottleneck analysis |
 
-Runs a comprehensive project audit with 5 parallel subagents (Security, Bugs, Code Hygiene, Structure, GitHub Issues). Each finding is automatically created as a GitHub Issue.
+### Platform Support
+
+| Skill | Claude Code | OpenCode |
+|-------|:-----------:|:--------:|
+| pr-reviewer | Yes | PoC |
+| All others | Yes | Planned |
+
+---
+
+### auto-dev
+
+Universal autonomous development agent. Accepts any task, asks adaptive clarifying questions, creates an execution plan, implements with parallel agents, and verifies through an iterative review-fix loop with 4 reviewers (max 5 iterations).
 
 ```
-/codewright:audit-project
+/codewright:auto-dev
 ```
 
-**Requirements:** Git repository with GitHub remote, `gh` CLI installed and authenticated.
+**Workflow:** Analyze → Plan (+Mockup) → Execute (parallel workers) → Review-Fix Loop (Logic, Security, Quality, Architecture) → Harden → Acceptance → Finish
+
+---
+
+### github-issue-fixer
+
+Fixes GitHub Issues with an 8-wave architecture: dual-agent validation, TDD (reproduction test first), iterative multi-reviewer code review (max 5 rounds), test hardening, and automatic issue lifecycle management.
+
+```
+/codewright:github-issue-fixer
+```
+
+**Usage:** Pass an issue number or URL as argument.
+
+**Waves:** Validate (dual-agent) → Plan → Test-First → Fix → Review-Fix Loop → Harden → Acceptance → Commit
 
 ---
 
@@ -37,19 +86,15 @@ Analyzes the entire codebase with 7 parallel agents, automatically fixes found i
 
 ---
 
-### github-issue-fixer
+### audit-project
 
-Fixes GitHub Issues with an 8-wave architecture: dual-agent validation, TDD (reproduction test first), iterative multi-reviewer code review (Logic, Security, Quality, Architecture — max 5 rounds), test hardening, and automatic issue lifecycle management (comment + close).
+Runs a comprehensive project audit with 5 parallel subagents (Security, Bugs, Code Hygiene, Structure, GitHub Issues). Each finding is automatically created as a GitHub Issue.
 
 ```
-/codewright:github-issue-fixer
+/codewright:audit-project
 ```
 
-**Usage:** Pass an issue number or URL as argument.
-
-**Waves:** Validate (dual-agent) → Plan → Test-First → Fix → Review-Fix Loop → Harden → Acceptance → Commit
-
-**Agents:** Analyzer, Validator, Planner, Test-Writer, Coder, Logic/Security/Quality/Architecture Reviewers, Fixer
+**Requirements:** Git repository with GitHub remote, `gh` CLI installed.
 
 ---
 
@@ -65,29 +110,15 @@ Orchestrates a full project refactoring with autonomous subagents. A teamleader 
 
 ---
 
-### auto-dev
+### pr-reviewer
 
-Universal autonomous development agent. Accepts any task (features, bugfixes, removals, refactoring), asks adaptive clarifying questions, creates an execution plan, implements with parallel agents, and verifies through an iterative review-fix loop (max 3 iterations).
-
-```
-/codewright:auto-dev
-```
-
-**Workflow:** Analyze & Questions → Plan → Execute (parallel workers) → Auto-Checks → Code Reviews → Fix Loop → Report
-
-**Agents:** Requirement Analyst, Planner, Code Workers, Test Runner, Logic/Security/Quality Reviewers, Fixers
-
----
-
-### codebase-onboarding
-
-Analyzes a codebase and generates architecture documentation and getting-started guides. 3 agents: Structure Scanner → Architecture Analyzer → Doc Writer.
+Multi-perspective code review of a Pull Request using 3 parallel agents (Logic, Security, Quality). Optionally posts review as GitHub PR comment.
 
 ```
-/codewright:codebase-onboarding
+/codewright:pr-reviewer
 ```
 
-**Output:** `ARCHITECTURE.md` and/or `GETTING-STARTED.md`
+**Usage:** Pass a PR number or URL as argument.
 
 ---
 
@@ -103,15 +134,15 @@ Finds missing tests, identifies coverage gaps, and writes tests automatically. 2
 
 ---
 
-### pr-reviewer
+### codebase-onboarding
 
-Multi-perspective code review of a Pull Request using 3 parallel agents (Logic, Security, Quality). Optionally posts review as GitHub PR comment.
+Analyzes a codebase and generates architecture documentation and getting-started guides. 3 agents: Structure Scanner → Architecture Analyzer → Doc Writer.
 
 ```
-/codewright:pr-reviewer
+/codewright:codebase-onboarding
 ```
 
-**Usage:** Pass a PR number or URL as argument.
+**Output:** `ARCHITECTURE.md` and/or `GETTING-STARTED.md`
 
 ---
 
@@ -143,9 +174,9 @@ Or update manually:
 
 ## Requirements
 
-- [Claude Code](https://claude.ai/code) with plugin support
+- [Claude Code](https://claude.ai/code) or [OpenCode](https://github.com/anomalyco/opencode)
 - Git
-- Optional: GitHub CLI (`gh`) for audit-project and github-issue-fixer
+- Optional: GitHub CLI (`gh`) for audit-project, github-issue-fixer, and pr-reviewer
 
 ## License
 

@@ -4,13 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a **Claude Code Plugin** (`codewright`) — a collection of multi-agent skills for Claude Code that automate complex development tasks. Each skill is a self-contained directory under `skills/` with a `SKILL.md` entry point, agent definitions, and reference templates.
+This is a **multi-platform AI coding plugin** (`codewright`) — a collection of multi-agent skills that automate complex development tasks. Skills are self-contained directories with a `SKILL.md` entry point, agent definitions, and reference templates.
+
+**Supported platforms**: Claude Code (primary), OpenCode (PoC via bridge plugin).
 
 ## Plugin Structure
 
 ```
 .claude-plugin/
-  plugin.json               # Plugin manifest (name, version, author)
+  plugin.json               # Claude Code plugin manifest (name, version, author)
 references/                   # Shared references across all skills
   agent-invocation.md         # How to start and communicate with agents
   finding-format.md           # Unified finding format for all analysis agents
@@ -19,9 +21,17 @@ skills/
     SKILL.md                # Main skill definition (frontmatter + workflow)
     agents/                 # Subagent prompt definitions (.md files)
     references/             # Templates, formats, conventions (.md files)
+platforms/
+  opencode/                 # OpenCode bridge plugin (@codewright/opencode)
+    src/                    # Plugin TypeScript source (orchestrator, tools, types)
+    tools/                  # Standalone custom tool (cw_agent.ts → .opencode/tools/)
+    agents/                 # Predefined agents (cw-explore, cw-worker)
+    skills/                 # OpenCode-specific SKILL.md versions
+    setup.sh                # Installation script for .opencode/ setup
 ```
 
-**Installation**: `claude plugin add` or test locally with `claude --plugin-dir .`
+**Installation (Claude Code)**: `claude plugin add` or test locally with `claude --plugin-dir .`
+**Installation (OpenCode)**: `bash platforms/opencode/setup.sh` or (when published) `"plugin": ["@codewright/opencode"]`
 
 ### Skills
 
