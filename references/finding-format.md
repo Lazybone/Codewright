@@ -27,6 +27,7 @@ This enables the coordinator to consolidate and deduplicate.
 | Hygiene Inspector | `[HYGIENE]` | audit-project | dead-code, junk-file, gitignore, duplicate, unused-dep, large-file, commented-code |
 | Structure Reviewer | `[STRUCTURE]` | audit-project | missing-file, dependencies, tests, naming, config, folder-structure |
 | Issues Auditor | `[ISSUES]` | audit-project | stale, possibly-fixed, missing-issue, duplicate, unlabeled, quality |
+| Logic Reviewer | `[LOGIC]` | github-issue-fixer | correctness, edge-case, logic-error, missing-impl, error-handling |
 | Code Quality | `[QUALITY]` | codebase-doctor | dead-code, commented-code, duplication, complexity, unused-dep, junk-file, naming |
 | API Consistency | `[API]` | codebase-doctor | url-pattern, response-format, validation, auth, frontend-sync, docs |
 | Dependency Analyzer | `[DEPS]` | codebase-doctor | vulnerability, outdated, conflict, bloat, license, build-config |
