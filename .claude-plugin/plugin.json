@@ -1,7 +1,7 @@
 {
   "name": "codewright",
   "description": "Multi-agent skills for Claude Code: project audits, codebase analysis with auto-fix, GitHub issue fixing, full project refactoring, and autonomous task execution.",
-  "version": "0.4.0",
+  "version": "0.3.5",
   "author": {
     "name": "Digitmedia"
   }

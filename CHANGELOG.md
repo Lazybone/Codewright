@@ -5,7 +5,7 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
-## [0.4.0] - 2026-04-19
+## [0.3.5] - 2026-04-19
 
 ### Changed
 
