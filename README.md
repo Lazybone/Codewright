@@ -39,13 +39,17 @@ Analyzes the entire codebase with 7 parallel agents, automatically fixes found i
 
 ### github-issue-fixer
 
-Systematically fixes a specific GitHub Issue: load issue, locate bug, create fix plan, implement, verify, and commit.
+Fixes GitHub Issues with an 8-wave architecture: dual-agent validation, TDD (reproduction test first), iterative multi-reviewer code review (Logic, Security, Quality, Architecture — max 5 rounds), test hardening, and automatic issue lifecycle management (comment + close).
 
 ```
 /codewright:github-issue-fixer
 ```
 
 **Usage:** Pass an issue number or URL as argument.
+
+**Waves:** Validate (dual-agent) → Plan → Test-First → Fix → Review-Fix Loop → Harden → Acceptance → Commit
+
+**Agents:** Analyzer, Validator, Planner, Test-Writer, Coder, Logic/Security/Quality/Architecture Reviewers, Fixer
 
 ---
 

@@ -29,7 +29,7 @@ skills/
 |---|---|---|
 | `audit-project` | `/codewright:audit-project` | 5 parallel Explore agents → GitHub Issue creation |
 | `codebase-doctor` | `/codewright:codebase-doctor` | 3-wave: 7 Explore → Fix → Review agents |
-| `github-issue-fixer` | `/codewright:github-issue-fixer` | Sequential: Explore → Plan → Fix → Verify → Commit |
+| `github-issue-fixer` | `/codewright:github-issue-fixer` | 8-wave: Validate (dual-agent) → Plan → TDD → Fix → Review-Fix Loop (4 reviewers, max 5) → Harden → Acceptance → Commit |
 | `refactor-orchestrator` | `/codewright:refactor-orchestrator` | Teamleader + Scout/Architect/Worker/Test agents (agents/ + references/) |
 | `auto-dev` | `/codewright:auto-dev` | Teamleader + Analyst/Planner/Workers/Reviewers/Fixers (6 phases, review-fix loop) |
 
