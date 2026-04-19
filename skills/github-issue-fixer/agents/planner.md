@@ -35,10 +35,27 @@ For each file that needs to be changed:
 
 ### 3. Test Strategy
 
-Define what needs to be tested:
+Define a comprehensive test plan:
+
+#### Reproduction Test (Wave 3 — must be written first)
+- **What to test**: The exact behavior described in the issue
+- **Expected failure**: How the test should fail before the fix
+- **Test location**: Where to put the test (existing test file or new one)
+- **Minimal scope**: Test only the bug, nothing else
+
+#### Regression Tests (Wave 6 — after reviews pass)
+- **Related functionality**: What else could break from this fix
+- **Edge cases**: Boundary conditions, empty inputs, error paths
+- **Integration points**: If the fix touches an API boundary
+
+#### Existing Tests
 - Which existing tests must continue to pass
-- Which new tests should be written
-- Whether manual/browser tests are needed (for UI bugs)
+- Whether any existing tests need updating (and why)
+
+#### Manual/Browser Verification
+- Needed: yes/no
+- If yes: exact steps to verify in the browser
+- Reference: `references/devtools-verification.md`
 
 ### 4. Result Format
 
@@ -60,14 +77,21 @@ Define what needs to be tested:
 - Reason: <why>
 - Risk: low/medium/high
 
-### Tests
+### Test Strategy
+
+#### Reproduction Test
+- File: <test file path>
+- Test name: <descriptive name>
+- Asserts: <what the test checks>
+- Expected failure before fix: <error message or assertion failure>
+
+#### Regression Tests
+- <test description 1>
+- <test description 2>
+- <edge case test description>
 
 #### Existing Tests (must continue to pass)
 - <test-file>: <test-name>
-
-#### New Tests
-- <what should be tested>
-- <expected result>
 
 #### Manual Verification
 - Needed: yes/no
@@ -75,4 +99,8 @@ Define what needs to be tested:
 
 ### Overall Risk Assessment
 <low/medium/high with justification>
+
+### Dissenting Analysis (if applicable)
+<If the Analyzer and Validator disagreed, document the dissenting
+view and how it affects the risk assessment>
 ```
