@@ -76,6 +76,9 @@ Summarize your analysis in the following format:
 ```
 ## Analysis Result
 
+### Verdict
+CONFIRMED / NOT_CONFIRMED
+
 ### Issue Summary
 <1-2 sentences describing the problem>
 
@@ -84,13 +87,24 @@ Summarize your analysis in the following format:
 - `path/to/file2.ts` (line Z): <what happens there>
 
 ### Root Cause
-<Explanation of the cause>
+<Explanation of the cause — only if CONFIRMED>
 
 ### Reproduction
-- Status: CONFIRMED / NOT REPRODUCIBLE / PARTIAL
+- Status: CONFIRMED / NOT_REPRODUCIBLE / PARTIAL
 - Method: <how reproduced>
 - Relevant tests: <which tests are affected>
+
+### Confidence
+<HIGH / MEDIUM / LOW — how confident are you in your verdict>
+<1-2 sentences explaining your confidence level>
 
 ### Additional Observations
 <Anything that might be relevant for the fix>
 ```
+
+**VERDICT rules:**
+- `CONFIRMED`: You found the root cause AND can reproduce the bug
+  (or found clear evidence of the bug in the code)
+- `NOT_CONFIRMED`: You could not find evidence of the reported problem.
+  The code appears to work correctly, or the issue description does
+  not match the actual codebase behavior.
