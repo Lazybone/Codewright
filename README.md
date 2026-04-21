@@ -29,6 +29,7 @@ Or install manually — see the [Installation Guide](platforms/opencode/INSTALL.
 | Skill | Agents | Description |
 |-------|--------|-------------|
 | [auto-dev](#auto-dev) | 9 | Universal autonomous dev agent — features, bugfixes, refactoring |
+| [bug-fixer](#bug-fixer) | 10 | TDD-based bug fixing with 8-phase workflow |
 | [github-issue-fixer](#github-issue-fixer) | 10 | 8-wave bug fix pipeline with TDD and iterative review |
 | [codebase-doctor](#codebase-doctor) | 7 | Analyze → Auto-Fix → Verify in 3 waves |
 | [audit-project](#audit-project) | 5 | Parallel project audit → GitHub Issues |
@@ -38,12 +39,7 @@ Or install manually — see the [Installation Guide](platforms/opencode/INSTALL.
 | [codebase-onboarding](#codebase-onboarding) | 3 | Architecture docs + getting-started guides |
 | [perf-analyzer](#perf-analyzer) | 4 | Performance bottleneck analysis |
 
-### Platform Support
-
-| Skill | Claude Code | OpenCode |
-|-------|:-----------:|:--------:|
-| pr-reviewer | Yes | PoC |
-| All others | Yes | Planned |
+All 10 skills are available on both Claude Code and OpenCode.
 
 ---
 
@@ -56,6 +52,18 @@ Universal autonomous development agent. Accepts any task, asks adaptive clarifyi
 ```
 
 **Workflow:** Analyze → Plan (+Mockup) → Execute (parallel workers) → Review-Fix Loop (Logic, Security, Quality, Architecture) → Harden → Acceptance → Finish
+
+---
+
+### bug-fixer
+
+Specialized bug-fixing agent with TDD workflow. Analyzes root cause, writes a reproduction test (TDD RED), implements the minimal fix (TDD GREEN), then verifies through an iterative review-fix loop with 4 reviewers, test hardening, and acceptance review.
+
+```
+/codewright:bug-fixer
+```
+
+**Workflow:** Analyze → Reproduce (TDD RED) → Plan & Fix (TDD GREEN) → Review-Fix Loop → Harden → Acceptance → Finish
 
 ---
 
@@ -159,6 +167,8 @@ Identifies performance bottlenecks using up to 4 parallel agents (Bundle, Query,
 
 ## Updating
 
+### Claude Code
+
 Enable auto-updates (recommended):
 
 ```
@@ -170,6 +180,28 @@ Or update manually:
 ```
 /plugin marketplace update Lazybone-Codewright
 ```
+
+### OpenCode
+
+Re-run the installation prompt in your OpenCode session:
+
+```
+Install and configure Codewright for OpenCode by following the instructions here:
+https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md
+```
+
+Or update manually:
+
+```bash
+CW_TMP="$(mktemp -d)"
+git clone --depth 1 --filter=blob:none --sparse \
+    https://github.com/Lazybone/Codewright.git "$CW_TMP/codewright"
+cd "$CW_TMP/codewright" && git sparse-checkout set platforms/opencode
+bash "$CW_TMP/codewright/platforms/opencode/setup.sh"
+rm -rf "$CW_TMP"
+```
+
+The setup script overwrites existing files — no uninstall needed before updating.
 
 ## Requirements
 
