@@ -5,6 +5,19 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.8] - 2026-04-21
+
+### Added
+
+- **bug-fixer skill**: Specialized TDD-based bug-fixing agent with 8-phase workflow:
+  - Phase 1: Bug Analyst scans codebase, identifies root cause candidates, asks adaptive questions
+  - Phase 2: Reproducer writes a failing test (TDD RED) to confirm the bug
+  - Phase 3: Fix Planner designs minimal fix, Fixer applies it (TDD GREEN)
+  - Phases 4-6: Full review pipeline — 4-reviewer review-fix loop (max 5 iterations), test hardening, acceptance review
+  - 3 new specialized agents: bug-analyst, reproducer, fix-planner
+  - 7 adapted agents from auto-dev: fixer, test-runner, test-writer, 4 reviewers (logic, security, quality, architecture)
+  - Bug-fix specific report template with root cause documentation and TDD verification
+
 ## [0.3.7] - 2026-04-19
 
 ### Added
