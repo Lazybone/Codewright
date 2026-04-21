@@ -17,6 +17,7 @@ GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 SKILLS=(
   audit-project
   auto-dev
+  bug-fixer
   codebase-doctor
   codebase-onboarding
   github-issue-fixer

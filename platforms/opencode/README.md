@@ -2,7 +2,7 @@
 
 Multi-agent skills for [OpenCode](https://github.com/anomalyco/opencode) — automated code review, bug fixing, refactoring, and project audits.
 
-> **Status: Proof of Concept** — `pr-reviewer` skill available, more coming.
+> **Status: Proof of Concept** — 10 skills available.
 
 ## Installation
 
@@ -51,17 +51,18 @@ The `cw_agent` tool is registered by the plugin at startup via the `tool` hook �
 
 ## Skills Roadmap
 
-| Skill | Status | Description |
-|-------|--------|-------------|
-| `pr-reviewer` | Available | 3-agent parallel PR review |
-| `audit-project` | Planned | 5-agent parallel codebase audit |
-| `perf-analyzer` | Planned | 4-agent performance analysis |
-| `codebase-onboarding` | Planned | Architecture docs generation |
-| `auto-dev` | Planned | 9-agent autonomous development |
-| `github-issue-fixer` | Planned | 8-wave bug fix pipeline |
-| `codebase-doctor` | Planned | 7-agent analyze + fix + verify |
-| `refactor-orchestrator` | Planned | Multi-phase refactoring |
-| `test-engineer` | Planned | Coverage analysis + test generation |
+| Skill | Description |
+|-------|-------------|
+| `audit-project` | 5-agent parallel codebase audit |
+| `auto-dev` | 9-agent autonomous development |
+| `bug-fixer` | TDD-based bug fixing (8-phase workflow) |
+| `codebase-doctor` | 7-agent analyze + fix + verify |
+| `codebase-onboarding` | Architecture docs generation |
+| `github-issue-fixer` | 8-wave bug fix pipeline |
+| `perf-analyzer` | 4-agent performance analysis |
+| `pr-reviewer` | 3-agent parallel PR review |
+| `refactor-orchestrator` | Multi-phase refactoring |
+| `test-engineer` | Coverage analysis + test generation |
 
 ## Development
 

@@ -17,6 +17,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - 3 new specialized agents: bug-analyst, reproducer, fix-planner
   - 7 adapted agents from auto-dev: fixer, test-runner, test-writer, 4 reviewers (logic, security, quality, architecture)
   - Bug-fix specific report template with root cause documentation and TDD verification
+- **OpenCode platform**: Added `bug-fixer` skill to OpenCode platform (10 skills total), updated setup.sh and INSTALL.md
 
 ## [0.3.7] - 2026-04-19
 
