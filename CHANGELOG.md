@@ -5,6 +5,19 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.4.0] - 2026-04-22
+
+### Added
+
+- **upgrade skill**: Platform-aware upgrade skill for both Claude Code and OpenCode
+  - Auto-detects platform via runtime markers (plugin cache, OpenCode directories) with user fallback
+  - Checks current vs latest version via GitHub API (gh CLI → curl → raw plugin.json fallback)
+  - Claude Code: Clears plugin cache to trigger fresh download on next skill invocation
+  - OpenCode: Fully automated upgrade via sparse git clone + setup.sh re-run
+  - Post-upgrade verification confirms installed version matches expected
+  - No subagents required — coordinator-only skill with inline shell commands
+  - Version marker file `.codewright-version` written by setup.sh for OpenCode version tracking
+
 ## [0.3.9] - 2026-04-22
 
 ### Added
