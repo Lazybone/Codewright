@@ -4,7 +4,8 @@ description: >
   Analyzes a GitHub issue, validates it with dual-agent verification,
   writes a reproduction test (TDD), implements the fix, runs iterative
   multi-reviewer code review (Logic, Security, Quality, Architecture),
-  hardens with regression tests, and commits with issue lifecycle management.
+  hardens with regression tests, runs CI validation loop, and commits
+  with issue lifecycle management.
   Use this skill when the user wants to fix a GitHub issue, mentions an issue
   URL or issue number, or says "fix issue", "resolve issue", "look at issue #X",
   "fix this bug", "resolve this error" with an issue reference.
@@ -14,8 +15,8 @@ description: >
 
 # GitHub Issue Fixer — Wave-Based Workflow
 
-This skill fixes GitHub issues systematically using an 8-wave architecture
-with TDD core, multi-reviewer verification, and GitHub issue lifecycle management.
+This skill fixes GitHub issues systematically using a 9-wave architecture
+with TDD core, multi-reviewer verification, CI validation, and GitHub issue lifecycle management.
 
 ## Prerequisites
 
@@ -34,10 +35,12 @@ Wave 4: FIX         ── Coder: implement fix (reproduction test must PASS)
 Wave 5: REVIEW-FIX  ── 4 Reviewers parallel → Fixers → Loop (max 5)
 Wave 6: HARDEN      ── Test-Writer: regression + edge-case tests
 Wave 7: ACCEPTANCE  ── 4 Reviewers (final review of code + tests)
-Wave 8: COMMIT      ── Commit + issue comment + close (or report)
+Wave 8: CI VALIDATE ── CI Validator → Fixers → Loop (max 3)
+Wave 9: COMMIT      ── Commit + issue comment + close (or report)
 ```
 
 Iteration budget: Wave 5 and Wave 7 share a maximum of **5 iterations** total.
+CI validation budget: Wave 8 has its own maximum of **3 iterations**.
 
 ## Step-by-Step Process
 
@@ -212,7 +215,7 @@ Initialize active reviewers: `active = [logic, security, quality, architecture]`
 **Loop end**
 
 If the loop exits because `iteration >= 5` with remaining findings:
-→ Skip to Wave 8 (report mode — no commit)
+→ Skip to Wave 9 (report mode — no commit)
 
 ### Wave 6: HARDEN
 
@@ -243,18 +246,55 @@ Ensure `CHANGED_FILES` includes all files changed on the branch, including test 
 
 | Result | Action |
 |--------|--------|
-| No findings from any reviewer | Continue → Wave 8 (commit mode) |
-| Findings exist | `iteration += 1`. Reset `active` to all 4 reviewers. Re-enter Wave 5 at step 5 (Fixer agents resolve the acceptance findings), then continue the loop from step 6. If iteration budget exhausted (>= 5 total across Wave 5 + 7) → Wave 8 (report mode) |
+| No findings from any reviewer | Continue → Wave 8 (CI Validation) |
+| Findings exist | `iteration += 1`. Reset `active` to all 4 reviewers. Re-enter Wave 5 at step 5 (Fixer agents resolve the acceptance findings), then continue the loop from step 6. If iteration budget exhausted (>= 5 total across Wave 5 + 7) → Wave 9 (report mode) |
 
-### Wave 8: COMMIT or REPORT
+### Wave 8: CI VALIDATION
 
-**If all findings are resolved (commit mode):**
+Before committing, run the full CI validation loop to ensure all project checks pass.
+This loop has its own budget of **3 iterations** (separate from the review-fix loop budget).
+
+Initialize: `ci_iteration = 0`
+
+#### Step 1: Run CI Validator
+
+Start the CI Validator as a **Code-Changing (Auto Mode)** agent.
+Read `agents/ci-validator.md` and start the agent according to `../../references/agent-invocation.md`.
+
+Pass:
+- **PROJECT_ROOT**: Path to the project directory
+- **BUILD_COMMAND**, **TEST_COMMAND**, **LINT_COMMAND**, **TYPECHECK_COMMAND**: Any known commands from Wave 1/2 analysis
+- **CI_COMMANDS**: Any additional CI commands detected during the run
+
+Save results to `{RUN_DIR}/ci-validation/iteration-{ci_iteration}.md`
+
+#### Step 2: Evaluate Results
+
+- If **all checks pass** (Overall: PASS): proceed to **Wave 9** (commit mode)
+- If **failures exist** and `ci_iteration < 3`:
+  1. Increment `ci_iteration`
+  2. Group CI failures by file
+  3. Start Fix Agents as **Code-Changing (Auto Mode)** agents
+     - Read `agents/fixer.md` and start according to `../../references/agent-invocation.md`
+     - Use `run_in_background=true` for parallel execution (file-partitioned)
+     - Pass: PROJECT_ROOT, FILE_LIST, FINDINGS (CI failures formatted as findings)
+  4. After all Fix Agents return:
+     ```bash
+     git add -A && git commit -m "fix: resolve CI failures (ci-validation iteration {ci_iteration})"
+     ```
+  5. Go back to **Step 1**
+- If `ci_iteration >= 3` and **failures persist**: proceed to **Wave 9** (report mode)
+
+### Wave 9: COMMIT or REPORT
+
+**If all findings are resolved and CI passes (commit mode):**
 
 1. Show the user a summary:
    - Which files were changed
    - What the fix does
    - Reproduction test + hardening tests written
    - Review results (all clean)
+   - CI validation (all passing)
 2. **User-Gate:** "Fix is ready. Should I commit, comment on the issue, and close it?"
 3. If user agrees:
    a. Post comment on the issue using the Issue Resolved template from
@@ -270,10 +310,11 @@ Ensure `CHANGED_FILES` includes all files changed on the branch, including test 
       ```
    c. Ask whether to push and create a PR
 
-**If open findings remain (report mode):**
+**If open findings or CI failures remain (report mode):**
 
 1. Present a detailed report to the user:
    - All remaining findings with severity, file, and description
+   - CI failures (if any) with exact error messages
    - Which review rounds were completed
    - What was fixed vs what remains open
    - The current state of the code on the branch
@@ -297,3 +338,4 @@ Ensure `CHANGED_FILES` includes all files changed on the branch, including test 
 - Inform the user about progress at each wave transition.
 - When in doubt: better to ask than to guess.
 - The iteration budget (max 5) is shared between Wave 5 and Wave 7.
+- The CI validation budget (max 3) in Wave 8 is separate from the review iteration budget.

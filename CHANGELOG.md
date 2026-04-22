@@ -5,6 +5,19 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.9] - 2026-04-22
+
+### Added
+
+- **CI Validation Loop**: New pre-commit CI validation phase for `auto-dev`, `bug-fixer`, and `github-issue-fixer` skills
+  - Runs build, tests, lint, type checks, and CI-specific scripts before any final commit
+  - Fixes failures automatically in a loop (max 3 iterations, separate budget from review loop)
+  - If CI still failing after 3 iterations → enters report mode (no commit, user decides)
+  - New `ci-validator.md` agent: detects and runs project CI tooling (npm/cargo/go/maven/gradle/make)
+  - `auto-dev`: CI Validation added to Phase 7 before commit
+  - `bug-fixer`: CI Validation added to Phase 7 before commit
+  - `github-issue-fixer`: New Wave 8 (CI Validation) inserted, old Wave 8 becomes Wave 9
+
 ## [0.3.8] - 2026-04-21
 
 ### Added

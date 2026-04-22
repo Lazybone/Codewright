@@ -39,10 +39,10 @@ platforms/
 |---|---|---|
 | `audit-project` | `/codewright:audit-project` | 5 parallel Explore agents → GitHub Issue creation |
 | `codebase-doctor` | `/codewright:codebase-doctor` | 3-wave: 7 Explore → Fix → Review agents |
-| `github-issue-fixer` | `/codewright:github-issue-fixer` | 8-wave: Validate (dual-agent) → Plan → TDD → Fix → Review-Fix Loop (4 reviewers, max 5) → Harden → Acceptance → Commit |
+| `github-issue-fixer` | `/codewright:github-issue-fixer` | 9-wave: Validate (dual-agent) → Plan → TDD → Fix → Review-Fix Loop (4 reviewers, max 5) → Harden → Acceptance → CI Validation (max 3) → Commit |
 | `refactor-orchestrator` | `/codewright:refactor-orchestrator` | Teamleader + Scout/Architect/Worker/Test agents (agents/ + references/) |
-| `auto-dev` | `/codewright:auto-dev` | 8-phase: Analyst → Planner (+Mockup) → Workers → Review-Fix Loop (4 reviewers, max 5 iter.) → Harden → Acceptance → Finish |
-| `bug-fixer` | `/codewright:bug-fixer` | 8-phase: Bug Analyst → Reproduce (TDD RED) → Plan & Fix (TDD GREEN) → Review-Fix Loop (4 reviewers, max 5 iter.) → Harden → Acceptance → Finish |
+| `auto-dev` | `/codewright:auto-dev` | 8-phase: Analyst → Planner (+Mockup) → Workers → Review-Fix Loop (4 reviewers, max 5 iter.) → Harden → Acceptance → CI Validation (max 3) → Finish |
+| `bug-fixer` | `/codewright:bug-fixer` | 8-phase: Bug Analyst → Reproduce (TDD RED) → Plan & Fix (TDD GREEN) → Review-Fix Loop (4 reviewers, max 5 iter.) → Harden → Acceptance → CI Validation (max 3) → Finish |
 
 ## Skill File Format
 

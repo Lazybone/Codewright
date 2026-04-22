@@ -4,7 +4,8 @@ description: >
   Universal autonomous development agent. Accepts any development task (features, bugfixes,
   removals, refactoring), clarifies requirements through adaptive questions, creates an execution
   plan (with optional UI mockups), implements with parallel agents, and verifies through a
-  multi-stage review pipeline: 4-reviewer review-fix loop, test hardening, and acceptance review.
+  multi-stage review pipeline: 4-reviewer review-fix loop, test hardening, acceptance review,
+  and CI validation loop before commit.
   Triggers: "implement", "build", "add feature", "fix bug", "remove feature", "auto dev",
   "autonomous development", "execute task", "do this task".
   Also triggers on German: "implementiere", "baue", "Feature hinzufuegen", "Bug fixen",
@@ -16,7 +17,8 @@ description: >
 Autonomous development agent that accepts any task, asks clarifying questions,
 plans the implementation (with optional UI mockups), executes with parallel agents,
 and verifies through a multi-stage review pipeline: 4-reviewer review-fix loop,
-test hardening, and acceptance review. Fully autonomous after the initial question phase.
+test hardening, acceptance review, and CI validation loop before commit.
+Fully autonomous after the initial question phase.
 
 ## Architecture
 
@@ -25,19 +27,19 @@ test hardening, and acceptance review. Fully autonomous after the initial questi
 │              COORDINATOR (you)                │
 │  - Manage phases 0-7                          │
 │  - Orchestrate agents                         │
-│  - Handle review-fix + acceptance loop        │
+│  - Handle review-fix + acceptance + CI loops  │
 │  - Track shared iteration budget              │
 │  - Generate report                            │
 └──────┬────────────────────────────────────────┘
        │ spawns
-  ┌────┼────┬────────┬──────────┬──────────┬──────────┬──────────┐
-  ▼    ▼    ▼        ▼          ▼          ▼          ▼          ▼
-┌────┐┌────┐┌──────┐┌──────┐┌────────┐┌─────┐┌──────┐┌────────┐
-│REQ ││PLAN││CODE  ││TEST  ││REVIEW  ││FIXER││TEST  ││MOCKUP  │
-│ANLY││NER ││WORKER││RUNNER││AGENTS  ││(1-N)││WRITER││DESIGN. │
-│    ││    ││(1-N) ││      ││(4)     ││     ││      ││(opt.)  │
-│Ph.1││Ph.2││Ph. 3 ││Ph.4a ││Ph.4b/6 ││Ph.4c││Ph. 5 ││Ph. 2  │
-└────┘└────┘└──────┘└──────┘└────────┘└─────┘└──────┘└────────┘
+  ┌────┼────┬────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
+  ▼    ▼    ▼        ▼          ▼          ▼          ▼          ▼          ▼
+┌────┐┌────┐┌──────┐┌──────┐┌────────┐┌─────┐┌──────┐┌────────┐┌──────┐
+│REQ ││PLAN││CODE  ││TEST  ││REVIEW  ││FIXER││TEST  ││MOCKUP  ││CI    │
+│ANLY││NER ││WORKER││RUNNER││AGENTS  ││(1-N)││WRITER││DESIGN. ││VALID.│
+│    ││    ││(1-N) ││      ││(4)     ││     ││      ││(opt.)  ││      │
+│Ph.1││Ph.2││Ph. 3 ││Ph.4a ││Ph.4b/6 ││Ph.4c││Ph. 5 ││Ph. 2  ││Ph. 7 │
+└────┘└────┘└──────┘└──────┘└────────┘└─────┘└──────┘└────────┘└──────┘
 ```
 
 ## Workflow
@@ -59,7 +61,11 @@ digraph auto_dev {
     "Phase 5: Harden" [shape=box];
     "Phase 6: Acceptance Review" [shape=box];
     "Acceptance Findings?" [shape=diamond];
-    "Phase 7: Finish" [shape=box];
+    "Phase 7a: CI Validation" [shape=box];
+    "CI Clean?" [shape=diamond];
+    "CI Fix" [shape=box];
+    "CI iter < 3?" [shape=diamond];
+    "Phase 7b: Commit & Finish" [shape=box];
     "End" [shape=doublecircle];
 
     "Start" -> "Phase 0: Prep";
@@ -75,12 +81,18 @@ digraph auto_dev {
     "Phase 4c: Fix" -> "Iteration < 5?";
     "Iteration < 5?" -> "Phase 4a: Auto-Checks" [label="yes"];
     "Iteration < 5?" -> "Report Mode" [label="no"];
-    "Report Mode" -> "Phase 7: Finish";
+    "Report Mode" -> "End";
     "Phase 5: Harden" -> "Phase 6: Acceptance Review";
     "Phase 6: Acceptance Review" -> "Acceptance Findings?";
-    "Acceptance Findings?" -> "Phase 7: Finish" [label="none"];
+    "Acceptance Findings?" -> "Phase 7a: CI Validation" [label="none"];
     "Acceptance Findings?" -> "Phase 4c: Fix" [label="yes (re-enter loop)"];
-    "Phase 7: Finish" -> "End";
+    "Phase 7a: CI Validation" -> "CI Clean?";
+    "CI Clean?" -> "Phase 7b: Commit & Finish" [label="yes"];
+    "CI Clean?" -> "CI Fix" [label="no"];
+    "CI Fix" -> "CI iter < 3?";
+    "CI iter < 3?" -> "Phase 7a: CI Validation" [label="yes"];
+    "CI iter < 3?" -> "Report Mode" [label="no"];
+    "Phase 7b: Commit & Finish" -> "End";
 }
 ```
 
@@ -324,15 +336,52 @@ TASK_DESCRIPTION, PLAN_OVERVIEW.
 
 ---
 
-## Phase 7: Finish
+## Phase 7: CI Validation & Finish
 
-### Normal Mode (all findings resolved)
+### CI Validation Loop
+
+Before creating any final commit, run the full CI validation loop to ensure all
+project checks pass. This loop has its own budget of **3 iterations** (separate
+from the review-fix loop budget).
+
+Initialize: `ci_iteration = 0`
+
+#### Step 1: Run CI Validator
+
+Start the CI Validator as a **Code-Changing (Auto Mode)** agent.
+Read `agents/ci-validator.md` and start the agent according to `../../references/agent-invocation.md`.
+
+Pass:
+- **PROJECT_ROOT**: Path to the project directory
+- **BUILD_COMMAND**, **TEST_COMMAND**, **LINT_COMMAND**, **TYPECHECK_COMMAND**: Any known commands from Phase 1 analysis
+- **CI_COMMANDS**: Any additional CI commands detected during the run
+
+Save results to `{RUN_DIR}/ci-validation/iteration-{ci_iteration}.md`
+
+#### Step 2: Evaluate Results
+
+- If **all checks pass** (Overall: PASS): proceed to **Commit** (Normal Mode below)
+- If **failures exist** and `ci_iteration < 3`:
+  1. Increment `ci_iteration`
+  2. Group CI failures by file
+  3. Start Fix Agents as **Code-Changing (Auto Mode)** agents
+     - Read `agents/fixer.md` and start according to `../../references/agent-invocation.md`
+     - Use `run_in_background=true` for parallel execution (file-partitioned)
+     - Pass: PROJECT_ROOT, FILE_LIST, FINDINGS (CI failures formatted as findings)
+  4. After all Fix Agents return:
+     ```bash
+     git add -A && git commit -m "fix: resolve CI failures (ci-validation iteration {ci_iteration})"
+     ```
+  5. Go back to **Step 1**
+- If `ci_iteration >= 3` and **failures persist**: enter **Report Mode**
+
+### Normal Mode (all findings resolved + CI passing)
 
 1. **Final commit** (if there are uncommitted changes):
    ```
    git add -A && git commit -m "feat: <short task description>
 
-   Verified: <N> review iterations, hardening tests, acceptance review passed"
+   Verified: <N> review iterations, hardening tests, acceptance review passed, CI clean"
    ```
 
 2. **Generate report** according to `references/report-template.md`
@@ -354,15 +403,18 @@ TASK_DESCRIPTION, PLAN_OVERVIEW.
 
 ### Report Mode (iterations exhausted with open findings)
 
-If the review-fix loop reached the maximum of 5 iterations with findings still open:
+If the review-fix loop OR CI validation loop reached their maximum iterations
+with findings still open:
 
 1. **Do NOT create a final commit** — the code has unresolved issues
 2. **Generate report** with all open findings clearly listed
+   - Include both review findings and CI failures (if any)
    - Save to `{RUN_DIR}/report.md`
 3. **Present to the user:**
-   > "After 5 review iterations, there are still [N] open findings:
+   > "After [N] review iterations and [M] CI validation iterations,
+   > there are still [X] open issues:
    >
-   > [list of open findings with severity]
+   > [list of open findings/CI failures with severity]
    >
    > The changes are on branch `<branch-name>` but have NOT been finalized.
    >
