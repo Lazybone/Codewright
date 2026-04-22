@@ -69,7 +69,8 @@ If `PLATFORM` is empty after detection, ask the user:
 > 2. OpenCode (global install)
 > 3. OpenCode (project-local install)"
 
-Store the result as `PLATFORM` — one of: `claude-code`, `opencode-global`, `opencode-local`.
+Store the result as `PLATFORM` — must be exactly one of: `claude-code`, `opencode-global`,
+`opencode-local`. Reject any other value and re-ask.
 
 ---
 
