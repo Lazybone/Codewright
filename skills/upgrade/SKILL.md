@@ -28,7 +28,7 @@ Phase 1          Phase 2           Phase 3            Phase 4
 │ Platform │    │ Version      │  │ Upgrade        │  │ Success  │
 └──────────┘    └──────────────┘  └────────────────┘  └──────────┘
   runtime +       GitHub API        Claude Code:        re-read
-  filesystem      + fallbacks       /plugin update      version
+  filesystem      + fallbacks       cache clear         version
   + user ask                        OpenCode:           file
                                     setup.sh
 ```
@@ -38,38 +38,31 @@ Phase 1          Phase 2           Phase 3            Phase 4
 ## Phase 1: Platform Detection
 
 Detect which platform Codewright is running on. Try multiple strategies
-in order of reliability.
-
-### Strategy 1: Claude Code Plugin Cache
-
-```bash
-if [[ -d "$HOME/.claude/plugins/cache/Lazybone-Codewright" ]]; then
-  echo "PLATFORM=claude-code"
-fi
-```
-
-If this directory exists, the user is running Claude Code with the Codewright
-marketplace plugin installed.
-
-### Strategy 2: OpenCode Installation
+in order of reliability. **Claude Code takes precedence** if both are installed.
 
 ```bash
 OPENCODE_GLOBAL="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+PLATFORM=""
 
-# Global install
-if [[ -f "$OPENCODE_GLOBAL/.codewright-version" ]] || [[ -d "$OPENCODE_GLOBAL/skills/audit-project" ]]; then
-  echo "PLATFORM=opencode-global"
+# Strategy 1: Claude Code plugin cache (highest priority)
+if [[ -d "$HOME/.claude/plugins/cache/Lazybone-Codewright" ]]; then
+  PLATFORM="claude-code"
+
+# Strategy 2: OpenCode global install
+elif [[ -f "$OPENCODE_GLOBAL/.codewright-version" ]] || [[ -d "$OPENCODE_GLOBAL/skills/audit-project" ]]; then
+  PLATFORM="opencode-global"
+
+# Strategy 3: OpenCode project-local install
+elif [[ -f ".opencode/.codewright-version" ]] || [[ -d ".opencode/skills/audit-project" ]]; then
+  PLATFORM="opencode-local"
 fi
 
-# Project-local install
-if [[ -f ".opencode/.codewright-version" ]] || [[ -d ".opencode/skills/audit-project" ]]; then
-  echo "PLATFORM=opencode-local"
-fi
+echo "PLATFORM=${PLATFORM:-undetected}"
 ```
 
-### Strategy 3: User Fallback
+### User Fallback
 
-If no platform detected automatically, ask the user:
+If `PLATFORM` is empty after detection, ask the user:
 
 > "I couldn't auto-detect your platform. Which are you using?
 > 1. Claude Code
@@ -131,7 +124,25 @@ fi
 echo "LATEST=${LATEST:-unavailable}"
 ```
 
-### 2c: Compare and Report
+### 2c: Validate Version Format
+
+Before comparing, validate both version strings match semantic versioning:
+
+```bash
+SEMVER_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+if [[ -n "$CURRENT" && "$CURRENT" != "unknown" && ! "$CURRENT" =~ $SEMVER_RE ]]; then
+  echo "WARNING: Current version '$CURRENT' is not valid semver. Treating as unknown."
+  CURRENT="unknown"
+fi
+
+if [[ -n "$LATEST" && ! "$LATEST" =~ $SEMVER_RE ]]; then
+  echo "WARNING: Latest version '$LATEST' is not valid semver. Cannot proceed."
+  # Show manual upgrade instructions and stop
+fi
+```
+
+### 2d: Compare and Report
 
 Display the version status to the user:
 
@@ -143,16 +154,23 @@ Current version:  <CURRENT>
 Latest version:   <LATEST>
 ```
 
+**Version comparison** — use `sort -V` for proper semantic version ordering:
+
+```bash
+VERSION_HIGHER=$(printf '%s\n%s\n' "$CURRENT" "$LATEST" | sort -V | tail -1)
+```
+
 **Decision tree:**
 
 | Condition | Action |
 |-----------|--------|
-| `LATEST` is empty | "Could not reach GitHub. Check connection." → show manual steps, stop |
+| `LATEST` is empty or "unavailable" | "Could not reach GitHub. Check connection." → show manual steps, stop |
 | `CURRENT == LATEST` | "Already on the latest version!" → stop |
 | `CURRENT == "unknown"` | "Could not determine current version. Proceeding with upgrade." → Phase 3 |
-| `LATEST > CURRENT` | Show changelog excerpt → proceed to Phase 3 |
+| `VERSION_HIGHER == LATEST` (newer available) | Show changelog excerpt → proceed to Phase 3 |
+| `VERSION_HIGHER == CURRENT` (user has newer) | "You have a newer version ($CURRENT) than the latest release ($LATEST). No upgrade needed." → stop |
 
-### 2d: Show Changelog Excerpt
+### 2e: Show Changelog Excerpt
 
 Fetch the CHANGELOG.md from the main branch and extract entries between
 the current and latest version:
@@ -191,7 +209,7 @@ requires user action:
 > **Option 1** (recommended): Clear the plugin cache so the latest version
 > is downloaded on next use:
 > ```bash
-> rm -rf ~/.claude/plugins/cache/Lazybone-Codewright
+> rm -rf "$HOME/.claude/plugins/cache/Lazybone-Codewright"
 > ```
 > The latest version will be downloaded automatically when you next invoke
 > a Codewright skill.
@@ -214,29 +232,43 @@ echo "Plugin cache cleared. Next Codewright skill invocation will download v${LA
 
 ### OpenCode Upgrade
 
-OpenCode upgrades are fully automated via sparse git clone + setup.sh:
+OpenCode upgrades are fully automated via sparse git clone + setup.sh.
+
+**Important:** Capture the working directory before changing into the temp dir,
+so `--local` installs to the correct project path.
 
 ```bash
+ORIG_DIR="$(pwd)"
 CW_TMP="$(mktemp -d)"
+trap 'rm -rf "$CW_TMP"' EXIT
+
 echo "Downloading latest Codewright..."
 
 git clone --depth 1 --filter=blob:none --sparse \
-  https://github.com/Lazybone/Codewright.git "$CW_TMP/codewright" 2>&1
+  https://github.com/Lazybone/Codewright.git "$CW_TMP/codewright" \
+  || { echo "ERROR: Git clone failed. Check network connection."; exit 1; }
 
 cd "$CW_TMP/codewright"
-git sparse-checkout set platforms/opencode 2>&1
+
+git sparse-checkout set platforms/opencode .claude-plugin \
+  || { echo "ERROR: Sparse checkout failed."; exit 1; }
 
 echo "Running setup..."
 
 if [[ "$PLATFORM" == "opencode-local" ]]; then
-  bash "$CW_TMP/codewright/platforms/opencode/setup.sh" --local
+  cd "$ORIG_DIR"
+  bash "$CW_TMP/codewright/platforms/opencode/setup.sh" --local \
+    || { echo "ERROR: setup.sh failed. Check output above."; exit 1; }
 else
-  bash "$CW_TMP/codewright/platforms/opencode/setup.sh" --global
+  bash "$CW_TMP/codewright/platforms/opencode/setup.sh" --global \
+    || { echo "ERROR: setup.sh failed. Check output above."; exit 1; }
 fi
 
-rm -rf "$CW_TMP"
 echo "Cleanup done."
 ```
+
+The `trap` ensures the temp directory is cleaned up even if the script exits
+early due to an error.
 
 ---
 
@@ -292,10 +324,15 @@ Status:            <SUCCESS or PENDING RESTART>
 
 | Scenario | Action |
 |----------|--------|
-| Platform not detected | Ask user to specify (Strategy 3) |
+| Platform not detected | Ask user to specify (User Fallback) |
 | GitHub unreachable (all 3 strategies) | Show manual upgrade instructions, stop |
 | Current version unknown | Proceed with upgrade anyway |
+| Current version newer than latest | Inform user, stop (no downgrade) |
+| Version string not valid semver | Warn, treat as unknown |
 | Neither `gh` nor `curl` available | Stop, tell user to install `curl` |
+| Git clone fails (network/auth) | Show error, suggest manual download |
+| Sparse checkout fails | Show error, suggest full clone |
 | OpenCode `setup.sh` fails | Show error output, suggest manual steps |
-| Claude Code cache not clearable (permissions) | Suggest `sudo` or manual deletion |
+| Claude Code cache not clearable | Suggest manual deletion |
 | Git not available (OpenCode upgrade) | Stop, show manual download instructions |
+| Temp directory not cleaned up | `trap` ensures cleanup on any exit |
