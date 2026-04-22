@@ -43,6 +43,7 @@ platforms/
 | `refactor-orchestrator` | `/codewright:refactor-orchestrator` | Teamleader + Scout/Architect/Worker/Test agents (agents/ + references/) |
 | `auto-dev` | `/codewright:auto-dev` | 8-phase: Analyst → Planner (+Mockup) → Workers → Review-Fix Loop (4 reviewers, max 5 iter.) → Harden → Acceptance → CI Validation (max 3) → Finish |
 | `bug-fixer` | `/codewright:bug-fixer` | 8-phase: Bug Analyst → Reproduce (TDD RED) → Plan & Fix (TDD GREEN) → Review-Fix Loop (4 reviewers, max 5 iter.) → Harden → Acceptance → CI Validation (max 3) → Finish |
+| `upgrade` | `/codewright:upgrade` | Coordinator-only: Detect Platform → Version Check (GitHub API) → Upgrade (Claude Code: cache clear / OpenCode: setup.sh) → Verify |
 
 ## Skill File Format
 

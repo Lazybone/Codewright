@@ -25,6 +25,7 @@ SKILLS=(
   pr-reviewer
   refactor-orchestrator
   test-engineer
+  upgrade
 )
 
 info()  { printf '\033[0;34m[codewright]\033[0m %s\n' "$1"; }
@@ -75,6 +76,9 @@ if $UNINSTALL; then
 
   # Shared references
   rm -rf "$TARGET_DIR/references"
+
+  # Version marker
+  rm -f "$TARGET_DIR/.codewright-version"
 
   # Check global opencode.json for plugin reference
   GLOBAL_CONFIG="$GLOBAL_DIR/opencode.json"
@@ -135,6 +139,12 @@ OPENCODE_JSON
   ok "Created $GLOBAL_CONFIG with Codewright plugin"
 fi
 
+# Write version marker for upgrade skill
+CW_VERSION=$(grep -o '"version": "[^"]*"' "$SCRIPT_DIR/../../.claude-plugin/plugin.json" 2>/dev/null \
+  | head -1 | cut -d'"' -f4 || echo "unknown")
+echo "$CW_VERSION" > "$TARGET_DIR/.codewright-version"
+ok "Version marker written ($CW_VERSION)"
+
 # Verify
 info "Verifying installation ..."
 MISSING=0
@@ -166,4 +176,4 @@ echo "  - Skills:     ${SKILLS[*]}"
 echo "  - References: agent-invocation, finding-format"
 echo "  - Tool:       cw_agent (registered by plugin at startup)"
 echo ""
-info "Say 'review my PR' or 'auto dev: add feature X' in any OpenCode session."
+info "Say 'upgrade', 'review my PR', or 'auto dev: add feature X' in any OpenCode session."

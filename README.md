@@ -38,8 +38,9 @@ Or install manually — see the [Installation Guide](platforms/opencode/INSTALL.
 | [test-engineer](#test-engineer) | 4 | Coverage analysis + test generation |
 | [codebase-onboarding](#codebase-onboarding) | 3 | Architecture docs + getting-started guides |
 | [perf-analyzer](#perf-analyzer) | 4 | Performance bottleneck analysis |
+| [upgrade](#upgrade) | 0 | Platform-aware self-upgrade for Claude Code and OpenCode |
 
-All 10 skills are available on both Claude Code and OpenCode.
+All 11 skills are available on both Claude Code and OpenCode.
 
 ---
 
@@ -165,9 +166,34 @@ Identifies performance bottlenecks using up to 4 parallel agents (Bundle, Query,
 
 ---
 
+### upgrade
+
+Detects the current platform (Claude Code or OpenCode), checks for newer versions via GitHub API, and performs a platform-specific upgrade. No subagents — coordinator-only skill.
+
+```
+/codewright:upgrade
+```
+
+**Workflow:** Detect Platform → Version Check (GitHub API) → Upgrade → Verify
+
+- **Claude Code:** Clears plugin cache; latest version downloads automatically on next skill invocation
+- **OpenCode:** Fully automated via sparse git clone + setup.sh re-run
+
+---
+
 ## Updating
 
-### Claude Code
+The recommended way to update is the built-in upgrade skill:
+
+```
+/codewright:upgrade
+```
+
+This auto-detects your platform and handles the upgrade. See [upgrade](#upgrade) above.
+
+### Manual Update
+
+#### Claude Code
 
 Enable auto-updates (recommended):
 
@@ -181,7 +207,7 @@ Or update manually:
 /plugin marketplace update Lazybone-Codewright
 ```
 
-### OpenCode
+#### OpenCode
 
 Re-run the installation prompt in your OpenCode session:
 
