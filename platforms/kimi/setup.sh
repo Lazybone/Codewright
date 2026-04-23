@@ -20,6 +20,7 @@ SKILLS_SRC="$SCRIPT_DIR/skills"
 SKILLS=(
   audit-project
   auto-dev
+  brainstormer
   bug-fixer
   codebase-doctor
   codebase-onboarding

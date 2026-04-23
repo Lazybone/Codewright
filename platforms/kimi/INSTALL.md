@@ -73,7 +73,7 @@ This installs to `~/.kimi/skills/` by default (global, all projects).
 **Expected output:**
 ```
 [codewright] Installing Codewright to /home/user/.kimi/skills ...
-[codewright] 11 skills installed (audit-project auto-dev bug-fixer ...)
+[codewright] 12 skills installed (audit-project auto-dev brainstormer bug-fixer ...)
 [codewright] Version marker written (x.y.z)
 [codewright] Installation complete. All files verified.
 ```
@@ -96,7 +96,7 @@ GLOBAL_DIR="$HOME/.kimi"
 
 echo "=== Verification ==="
 
-for skill in audit-project auto-dev bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
+for skill in audit-project auto-dev brainstormer bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
     if [ -f "$GLOBAL_DIR/skills/$skill/SKILL.md" ]; then
         echo "✓ Skill: $skill"
     else
@@ -123,7 +123,7 @@ Tell the user:
 1. **What was installed** (globally to `~/.kimi/skills/`, available in all projects):
    - 11 Kimi CLI-optimized skills with inline agent definitions (no external references needed)
    - Shared references: `agent-invocation`, `finding-format`
-   - Skills: `audit-project`, `auto-dev`, `bug-fixer`, `codebase-doctor`, `codebase-onboarding`, `github-issue-fixer`, `perf-analyzer`, `pr-reviewer`, `refactor-orchestrator`, `test-engineer`, `upgrade`
+   - Skills: `audit-project`, `auto-dev`, `brainstormer`, `bug-fixer`, `codebase-doctor`, `codebase-onboarding`, `github-issue-fixer`, `perf-analyzer`, `pr-reviewer`, `refactor-orchestrator`, `test-engineer`, `upgrade`
 
 2. **How to use it:**
    - "review my PR" or "review PR #123" — parallel PR review
@@ -161,7 +161,7 @@ Follow these steps exactly.
 GLOBAL_DIR="$HOME/.kimi"
 
 # All skills
-for skill in audit-project auto-dev bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
+for skill in audit-project auto-dev brainstormer bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
     rm -rf "$GLOBAL_DIR/skills/$skill"
 done
 
@@ -177,7 +177,7 @@ echo "✓ Codewright skills and version marker removed"
 GLOBAL_DIR="$HOME/.kimi"
 
 REMAINING=0
-for skill in audit-project auto-dev bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
+for skill in audit-project auto-dev brainstormer bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
     [ -d "$GLOBAL_DIR/skills/$skill" ] && echo "✗ Still exists: skills/$skill" && REMAINING=$((REMAINING + 1))
 done
 
@@ -206,7 +206,7 @@ rm -rf /tmp/codewright
 
 ```bash
 GLOBAL_DIR="$HOME/.kimi"
-for skill in audit-project auto-dev bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
+for skill in audit-project auto-dev brainstormer bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
     rm -rf "$GLOBAL_DIR/skills/$skill"
 done
 rm -f "$GLOBAL_DIR/.codewright-version"

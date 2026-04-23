@@ -16,6 +16,7 @@ All skills have **inline agent definitions** — no external `../../references/`
 
 - `audit-project` — comprehensive project audit
 - `auto-dev` — autonomous development agent
+- `brainstormer` — concept development & planning
 - `bug-fixer` — TDD-based bug fixing
 - `codebase-doctor` — analyze and auto-fix issues
 - `codebase-onboarding` — architecture docs + getting-started guides
