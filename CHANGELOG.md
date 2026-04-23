@@ -5,6 +5,18 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.4.3] - 2026-04-23
+
+### Added
+
+- **brainstormer skill**: New autonomous concept-development and planning skill
+  - 8 agents: Requirement Analyst, Concept Developer, Planner, 4 Reviewers (Logic, Quality, Architecture, Security), Concept Fixer
+  - Workflow: Analyze & Questions → Concept → Plan → Review-Fix Loop (max 5 iterations) → Acceptance → Save Artifacts
+  - No code execution — pure planning and design work
+  - Saves artifacts to `.codewright/plan/concept.md` and `.codewright/imple/plan.md`
+  - Ideal pre-phase before `auto-dev` for complex features or architectural decisions
+  - `README.md` updated with brainstormer entry (12 skills total)
+
 ## [0.4.2] - 2026-04-23
 
 ### Added

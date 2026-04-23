@@ -9,7 +9,7 @@
     {
       "name": "codewright",
       "description": "Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.",
-      "version": "0.4.0",
+      "version": "0.4.3",
       "source": "./"
     }
   ]

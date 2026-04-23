@@ -40,6 +40,7 @@ Or install manually — see the [Kimi CLI Installation Guide](platforms/kimi/INS
 | Skill | Agents | Description |
 |-------|--------|-------------|
 | [auto-dev](#auto-dev) | 9 | Universal autonomous dev agent — features, bugfixes, refactoring |
+| [brainstormer](#brainstormer) | 8 | Concept development & planning — brainstorm, design, plan before you build |
 | [bug-fixer](#bug-fixer) | 10 | TDD-based bug fixing with 8-phase workflow |
 | [github-issue-fixer](#github-issue-fixer) | 10 | 8-wave bug fix pipeline with TDD and iterative review |
 | [codebase-doctor](#codebase-doctor) | 7 | Analyze → Auto-Fix → Verify in 3 waves |
@@ -51,7 +52,7 @@ Or install manually — see the [Kimi CLI Installation Guide](platforms/kimi/INS
 | [perf-analyzer](#perf-analyzer) | 4 | Performance bottleneck analysis |
 | [upgrade](#upgrade) | 0 | Platform-aware self-upgrade for Claude Code, OpenCode, and Kimi CLI |
 
-All 11 skills are available on Claude Code, OpenCode, and Kimi CLI.
+All 12 skills are available on Claude Code, OpenCode, and Kimi CLI.
 
 ---
 
@@ -64,6 +65,22 @@ Universal autonomous development agent. Accepts any task, asks adaptive clarifyi
 ```
 
 **Workflow:** Analyze → Plan (+Mockup) → Execute (parallel workers) → Review-Fix Loop (Logic, Security, Quality, Architecture) → Harden → Acceptance → Finish
+
+---
+
+### brainstormer
+
+Autonomous brainstorming and concept-development agent. Accepts any task, analyzes requirements through adaptive questions, develops a comprehensive concept, creates an implementation plan, and iterates with 4 reviewers until all are satisfied. No code is written — pure planning and design work.
+
+```
+/codewright:brainstormer
+```
+
+**Workflow:** Analyze & Questions → Concept Development → Planning → Review-Fix Loop (Logic, Security, Quality, Architecture) → Acceptance → Save Artifacts
+
+**Output:** `.codewright/plan/concept.md` + `.codewright/imple/plan.md`
+
+**Use case:** Use before `auto-dev` to think through a feature, design an architecture, or plan a complex refactoring without touching code.
 
 ---
 
