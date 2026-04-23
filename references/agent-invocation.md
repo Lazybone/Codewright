@@ -28,6 +28,7 @@ Agent(
 
 For agents that are allowed to modify or create files:
 
+**Claude Code / OpenCode:**
 ```
 Agent(
   mode="auto",
@@ -38,8 +39,21 @@ Agent(
 )
 ```
 
+**Kimi CLI:**
+```
+Agent(
+  subagent_type="coder",
+  prompt="Read the file agents/<name>.md and execute the instructions.
+    Project: <PROJECT_ROOT>
+    Files you may modify: <FILE_LIST>
+    Context: <ADDITIONAL_CONTEXT>"
+)
+```
+
 - The agent may read, create, and modify files.
 - The allowed files must **always be explicitly** specified in the prompt.
+- Use `mode="auto"` in Claude Code / OpenCode.
+- Use `subagent_type="coder"` in Kimi CLI (this is the default).
 
 ---
 
@@ -51,19 +65,19 @@ Multiple agents can be started simultaneously in a single message block:
 Agent(
   subagent_type="Explore",
   run_in_background=true,
-  name="security-agent",
+  description="security review",
   prompt="..."
 )
 
 Agent(
   subagent_type="Explore",
   run_in_background=true,
-  name="quality-agent",
+  description="quality review",
   prompt="..."
 )
 ```
 
-- Start each agent with `run_in_background=true` and a unique `name`.
+- Start each agent with `run_in_background=true` and a unique `description` (3-5 words).
 - Wait for **all** agents before merging the results.
 - The order of completion is not guaranteed.
 

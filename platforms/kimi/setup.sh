@@ -14,6 +14,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GLOBAL_DIR="$HOME/.kimi"
 
+# Use Kimi CLI-specific skill variants (platforms/kimi/skills/)
+SKILLS_SRC="$SCRIPT_DIR/skills"
+
 SKILLS=(
   audit-project
   auto-dev
@@ -71,6 +74,9 @@ if $UNINSTALL; then
     rm -rf "$TARGET_DIR/skills/$skill"
   done
 
+  # Shared references
+  rm -rf "$TARGET_DIR/references"
+
   # Version marker
   rm -f "$TARGET_DIR/.codewright-version"
 
@@ -86,15 +92,22 @@ info "Installing Codewright to $TARGET_DIR/skills ..."
 mkdir -p "$TARGET_DIR/skills"
 SKILL_COUNT=0
 for skill in "${SKILLS[@]}"; do
-  if [[ -d "$SCRIPT_DIR/../../skills/$skill" ]]; then
+  if [[ -d "$SKILLS_SRC/$skill" ]]; then
     rm -rf "$TARGET_DIR/skills/$skill"
-    cp -r "$SCRIPT_DIR/../../skills/$skill" "$TARGET_DIR/skills/$skill"
+    cp -r "$SKILLS_SRC/$skill" "$TARGET_DIR/skills/$skill"
     SKILL_COUNT=$((SKILL_COUNT + 1))
   else
     warn "Skill directory not found: $skill"
   fi
 done
 ok "$SKILL_COUNT skills installed (${SKILLS[*]})"
+
+# Shared references
+if [[ -d "$SCRIPT_DIR/../../references" ]]; then
+  rm -rf "$TARGET_DIR/references"
+  cp -r "$SCRIPT_DIR/../../references" "$TARGET_DIR/references"
+  ok "Shared references installed"
+fi
 
 # Write version marker for upgrade skill
 CW_VERSION=$(grep -o '"version": "[^"]*"' "$SCRIPT_DIR/../../.claude-plugin/plugin.json" 2>/dev/null \
@@ -122,5 +135,6 @@ fi
 echo ""
 info "Installed to: $TARGET_DIR/skills"
 echo "  - Skills: ${SKILLS[*]}"
+echo "  - References: agent-invocation, finding-format"
 echo ""
 info "Say 'upgrade', 'review my PR', or 'auto dev: add feature X' in any Kimi CLI session."

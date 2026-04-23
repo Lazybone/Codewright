@@ -10,7 +10,9 @@ bash /tmp/codewright/platforms/kimi/setup.sh
 rm -rf /tmp/codewright
 ```
 
-This installs 11 skills to `~/.kimi/skills/`:
+This installs 11 Kimi CLI-optimized skills to `~/.kimi/skills/`:
+
+All skills have **inline agent definitions** — no external `../../references/` or `agents/*.md` dependencies. Each skill uses Kimi CLI's built-in `coder` / `explore` / `plan` subagent types.
 
 - `audit-project` — comprehensive project audit
 - `auto-dev` — autonomous development agent

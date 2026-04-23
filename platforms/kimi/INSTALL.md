@@ -121,7 +121,9 @@ echo "=== Done ==="
 Tell the user:
 
 1. **What was installed** (globally to `~/.kimi/skills/`, available in all projects):
-   - 11 skills: `audit-project`, `auto-dev`, `bug-fixer`, `codebase-doctor`, `codebase-onboarding`, `github-issue-fixer`, `perf-analyzer`, `pr-reviewer`, `refactor-orchestrator`, `test-engineer`, `upgrade`
+   - 11 Kimi CLI-optimized skills with inline agent definitions (no external references needed)
+   - Shared references: `agent-invocation`, `finding-format`
+   - Skills: `audit-project`, `auto-dev`, `bug-fixer`, `codebase-doctor`, `codebase-onboarding`, `github-issue-fixer`, `perf-analyzer`, `pr-reviewer`, `refactor-orchestrator`, `test-engineer`, `upgrade`
 
 2. **How to use it:**
    - "review my PR" or "review PR #123" — parallel PR review
