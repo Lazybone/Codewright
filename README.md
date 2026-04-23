@@ -2,7 +2,7 @@
 
 Multi-agent skills for automated code analysis, bug fixing, refactoring, and project audits.
 
-Works with [Claude Code](https://claude.ai/code) and [OpenCode](https://github.com/anomalyco/opencode).
+Works with [Claude Code](https://claude.ai/code), [OpenCode](https://github.com/anomalyco/opencode), and [Kimi CLI](https://moonshotai.github.io/kimi-cli/).
 
 ## Installation
 
@@ -22,7 +22,18 @@ Install and configure Codewright for OpenCode by following the instructions here
 https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/opencode/INSTALL.md
 ```
 
-Or install manually — see the [Installation Guide](platforms/opencode/INSTALL.md).
+Or install manually — see the [OpenCode Installation Guide](platforms/opencode/INSTALL.md).
+
+### Kimi CLI
+
+Paste this into your Kimi CLI session:
+
+```
+Install and configure Codewright for Kimi CLI by following the instructions here:
+https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/kimi/INSTALL.md
+```
+
+Or install manually — see the [Kimi CLI Installation Guide](platforms/kimi/INSTALL.md).
 
 ## Skills
 
@@ -38,9 +49,9 @@ Or install manually — see the [Installation Guide](platforms/opencode/INSTALL.
 | [test-engineer](#test-engineer) | 4 | Coverage analysis + test generation |
 | [codebase-onboarding](#codebase-onboarding) | 3 | Architecture docs + getting-started guides |
 | [perf-analyzer](#perf-analyzer) | 4 | Performance bottleneck analysis |
-| [upgrade](#upgrade) | 0 | Platform-aware self-upgrade for Claude Code and OpenCode |
+| [upgrade](#upgrade) | 0 | Platform-aware self-upgrade for Claude Code, OpenCode, and Kimi CLI |
 
-All 11 skills are available on both Claude Code and OpenCode.
+All 11 skills are available on Claude Code, OpenCode, and Kimi CLI.
 
 ---
 
@@ -168,7 +179,7 @@ Identifies performance bottlenecks using up to 4 parallel agents (Bundle, Query,
 
 ### upgrade
 
-Detects the current platform (Claude Code or OpenCode), checks for newer versions via GitHub API, and performs a platform-specific upgrade. No subagents — coordinator-only skill.
+Detects the current platform (Claude Code, OpenCode, or Kimi CLI), checks for newer versions via GitHub API, and performs a platform-specific upgrade. No subagents — coordinator-only skill.
 
 ```
 /codewright:upgrade
@@ -178,6 +189,7 @@ Detects the current platform (Claude Code or OpenCode), checks for newer version
 
 - **Claude Code:** Clears plugin cache; latest version downloads automatically on next skill invocation
 - **OpenCode:** Fully automated via sparse git clone + setup.sh re-run
+- **Kimi CLI:** Fully automated via sparse git clone + setup.sh re-run
 
 ---
 
@@ -229,9 +241,31 @@ rm -rf "$CW_TMP"
 
 The setup script overwrites existing files — no uninstall needed before updating.
 
+#### Kimi CLI
+
+Re-run the installation prompt in your Kimi CLI session:
+
+```
+Install and configure Codewright for Kimi CLI by following the instructions here:
+https://raw.githubusercontent.com/Lazybone/Codewright/main/platforms/kimi/INSTALL.md
+```
+
+Or update manually:
+
+```bash
+CW_TMP="$(mktemp -d)"
+git clone --depth 1 --filter=blob:none --sparse \
+    https://github.com/Lazybone/Codewright.git "$CW_TMP/codewright"
+cd "$CW_TMP/codewright" && git sparse-checkout set platforms/kimi
+bash "$CW_TMP/codewright/platforms/kimi/setup.sh"
+rm -rf "$CW_TMP"
+```
+
+The setup script overwrites existing files — no uninstall needed before updating.
+
 ## Requirements
 
-- [Claude Code](https://claude.ai/code) or [OpenCode](https://github.com/anomalyco/opencode)
+- [Claude Code](https://claude.ai/code), [OpenCode](https://github.com/anomalyco/opencode), or [Kimi CLI](https://moonshotai.github.io/kimi-cli/)
 - Git
 - Optional: GitHub CLI (`gh`) for audit-project, github-issue-fixer, and pr-reviewer
 
