@@ -5,6 +5,18 @@ Alle relevanten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.4.1] - 2026-04-23
+
+### Added
+
+- **Kimi CLI platform**: Full install, uninstall, and upgrade support for Kimi CLI
+  - New `platforms/kimi/setup.sh`: global (`~/.kimi/skills/`) and local (`.kimi/skills/`) install
+  - New `platforms/kimi/INSTALL.md`: LLM-optimized installation guide for humans and agents
+  - New `platforms/kimi/README.md`: platform overview and quick reference
+  - `upgrade` skill extended with Kimi CLI detection (`kimi-global`, `kimi-local`)
+  - `upgrade` skill: version check, sparse-clone upgrade path, and verification for Kimi CLI
+  - Root `README.md` updated with Kimi CLI installation and update instructions
+
 ## [0.4.0] - 2026-04-22
 
 ### Added
