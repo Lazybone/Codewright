@@ -74,7 +74,7 @@ This installs to `~/.config/opencode/` by default (global, all projects).
 ```
 [codewright] Installing Codewright to /home/user/.config/opencode ...
 [codewright] Agents installed (cw-explore, cw-worker)
-[codewright] 10 skills installed (audit-project auto-dev bug-fixer codebase-doctor ...)
+[codewright] 12 skills installed (audit-project auto-dev brainstormer bug-fixer codebase-doctor ...)
 [codewright] Shared references installed
 [codewright] Created ~/.config/opencode/opencode.json with Codewright plugin
 [codewright] Installation complete. All files verified.
@@ -106,7 +106,7 @@ for agent in cw-explore cw-worker; do
     fi
 done
 
-for skill in audit-project auto-dev bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer; do
+for skill in audit-project auto-dev brainstormer bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
     if [ -f "$GLOBAL_DIR/skills/$skill/SKILL.md" ]; then
         echo "✓ Skill: $skill"
     else
@@ -138,7 +138,7 @@ Tell the user:
 
 1. **What was installed** (globally to `~/.config/opencode/`, available in all projects):
    - 2 agents: `cw-explore` (read-only analysis), `cw-worker` (code modifications)
-   - 10 skills: `audit-project`, `auto-dev`, `bug-fixer`, `codebase-doctor`, `codebase-onboarding`, `github-issue-fixer`, `perf-analyzer`, `pr-reviewer`, `refactor-orchestrator`, `test-engineer`
+   - 12 skills: `audit-project`, `auto-dev`, `brainstormer`, `bug-fixer`, `codebase-doctor`, `codebase-onboarding`, `github-issue-fixer`, `perf-analyzer`, `pr-reviewer`, `refactor-orchestrator`, `test-engineer`, `upgrade`
    - Shared references (agent-invocation, finding-format)
    - `cw_agent` tool (registered by plugin at startup)
 
@@ -181,7 +181,7 @@ rm -f "$GLOBAL_DIR/agents/cw-explore.md"
 rm -f "$GLOBAL_DIR/agents/cw-worker.md"
 
 # All skills
-for skill in audit-project auto-dev bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer; do
+for skill in audit-project auto-dev brainstormer bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
     rm -rf "$GLOBAL_DIR/skills/$skill"
 done
 
@@ -208,7 +208,7 @@ REMAINING=0
 for f in "$GLOBAL_DIR/agents/cw-explore.md" "$GLOBAL_DIR/agents/cw-worker.md"; do
     [ -f "$f" ] && echo "✗ Still exists: $f" && REMAINING=$((REMAINING + 1))
 done
-for skill in audit-project auto-dev bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer; do
+for skill in audit-project auto-dev brainstormer bug-fixer codebase-doctor codebase-onboarding github-issue-fixer perf-analyzer pr-reviewer refactor-orchestrator test-engineer upgrade; do
     [ -d "$GLOBAL_DIR/skills/$skill" ] && echo "✗ Still exists: skills/$skill" && REMAINING=$((REMAINING + 1))
 done
 [ -d "$GLOBAL_DIR/references" ] && echo "✗ Still exists: references/" && REMAINING=$((REMAINING + 1))
@@ -246,10 +246,11 @@ rm -rf /tmp/codewright
 GLOBAL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 rm -f  "$GLOBAL_DIR/agents/cw-explore.md" "$GLOBAL_DIR/agents/cw-worker.md"
 rm -rf "$GLOBAL_DIR/skills/audit-project" "$GLOBAL_DIR/skills/auto-dev" \
-       "$GLOBAL_DIR/skills/bug-fixer" "$GLOBAL_DIR/skills/codebase-doctor" \
-       "$GLOBAL_DIR/skills/codebase-onboarding" "$GLOBAL_DIR/skills/github-issue-fixer" \
-       "$GLOBAL_DIR/skills/perf-analyzer" "$GLOBAL_DIR/skills/pr-reviewer" \
-       "$GLOBAL_DIR/skills/refactor-orchestrator" "$GLOBAL_DIR/skills/test-engineer" \
+       "$GLOBAL_DIR/skills/brainstormer" "$GLOBAL_DIR/skills/bug-fixer" \
+       "$GLOBAL_DIR/skills/codebase-doctor" "$GLOBAL_DIR/skills/codebase-onboarding" \
+       "$GLOBAL_DIR/skills/github-issue-fixer" "$GLOBAL_DIR/skills/perf-analyzer" \
+       "$GLOBAL_DIR/skills/pr-reviewer" "$GLOBAL_DIR/skills/refactor-orchestrator" \
+       "$GLOBAL_DIR/skills/test-engineer" "$GLOBAL_DIR/skills/upgrade" \
        "$GLOBAL_DIR/references"
 # Edit $GLOBAL_DIR/opencode.json and remove "@codewright/opencode" from the plugin array
 ```
